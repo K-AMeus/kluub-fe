@@ -1,24 +1,23 @@
-import React, {FC, JSX} from 'react';
-import { Navigate } from 'react-router-dom';
-import { useAuth } from './AuthContext';
+import React, { FC, JSX } from "react";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "./AuthContext";
 
 interface PrivateRouteProps {
-    children: JSX.Element;
+  children: JSX.Element;
 }
 
-
 const PrivateRoute: FC<PrivateRouteProps> = ({ children }) => {
-    const { user, loading } = useAuth();
+  const { user, loading } = useAuth();
 
-    if (loading) {
-        return <div className="text-white">Loading user info...</div>;
-    }
+  if (loading) {
+    return <div className="text-white">Loading user info...</div>;
+  }
 
-    if (!user) {
-        return <Navigate to="/auth?mode=login" replace />;
-    }
+  if (!user) {
+    return <Navigate to="/auth?mode=login" replace />;
+  }
 
-    return children;
+  return children;
 };
 
 export default PrivateRoute;

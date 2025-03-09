@@ -25,30 +25,29 @@
 }
 
 .font-dela-gothic-one {
-  font-family: 'Dela Gothic One', sans-serif;
+  font-family: "Dela Gothic One", sans-serif;
   font-weight: normal;
   word-spacing: 8px;
-
 }
 
 .font-dela-gothic-one2 {
-  font-family: 'Dela Gothic One', sans-serif;
+  font-family: "Dela Gothic One", sans-serif;
   font-weight: 100;
   font-size: medium;
-  opacity: 0.90;
-
+  opacity: 0.9;
 }
 
 .font-dela-gothic-one3 {
-  font-family: 'Dela Gothic One', sans-serif;
+  font-family: "Dela Gothic One", sans-serif;
   font-weight: 100;
   font-size: medium;
   font-style: italic;
-  opacity:0.95;
+  opacity: 0.95;
 }
 
 .custom-text-shadow {
-  text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+  text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000,
+    -1px 1px 0 #000;
 }
 
 :root {
@@ -61,5 +60,3 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
-

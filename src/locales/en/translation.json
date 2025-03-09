@@ -1,10 +1,17 @@
 {
   "header": {
+    "nav1": "Events",
+    "nav2": "Contact",
+    "nav3": "Login",
+    "nav4": "Admin"
+  },
+  "landingPage": {
     "title": "No matter the mood, there's a buzzing event for you!",
     "subtitle": "Choose your city and find your perfect match."
   },
   "footer": {
     "contact": "Contact Us",
+    "signIn": "Sign In",
     "privacy": "Privacy Policy"
   },
   "common": {
