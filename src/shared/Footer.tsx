@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import { Link } from "react-router-dom";
 import { FaInstagram, FaFacebookF, FaTiktok } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
@@ -58,7 +58,7 @@ const Footer: FC = () => {
             </a>
           </div>
 
-          <div className="flex flex-col items-end ml-6 justify-center hidden md:block">
+          <div className="flex-col items-end ml-6 justify-center hidden md:block">
             <div>@Kluub 2025</div>
             <Link
               to="/privacy"

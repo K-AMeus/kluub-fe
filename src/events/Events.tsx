@@ -1,12 +1,4 @@
-import React, {
-  FC,
-  useEffect,
-  useState,
-  useRef,
-  useMemo,
-  MouseEvent,
-  TouchEvent,
-} from "react";
+import { FC, useEffect, useState, useRef, useMemo } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { User } from "firebase/auth";
@@ -22,9 +14,7 @@ const Events: FC = () => {
   const [events, setEvents] = useState<EventItem[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
-  const [isWideScreen, setIsWideScreen] = useState<boolean>(
-    window.innerWidth > 1024
-  );
+  const [setIsWideScreen] = useState<boolean>(window.innerWidth > 1024);
   const { user } = useAuth();
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState<boolean>(true);
@@ -39,16 +29,6 @@ const Events: FC = () => {
   const [filterPrice, setFilterPrice] = useState<string>("");
   const [sortByLikes, setSortByLikes] = useState<string>("");
 
-  const marqueeRef = useRef<HTMLDivElement | null>(null);
-  const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [startX, setStartX] = useState<number>(0);
-  const [scrollLeft, setScrollLeft] = useState<number>(0);
-
-  const formatDate = (dateTime: string) => {
-    const day = new Date(dateTime).getDate();
-    return day < 10 ? `0${day}` : `${day}`;
-  };
-
   const truncateDescription = (description: string, length = 80): string => {
     if (!description) return "";
     if (length <= 0) return "";
@@ -56,39 +36,6 @@ const Events: FC = () => {
       ? description.substring(0, length) + "..."
       : description;
   };
-
-  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!marqueeRef.current) return;
-    setIsDragging(true);
-    setStartX(e.pageX - marqueeRef.current.offsetLeft);
-    setScrollLeft(marqueeRef.current.scrollLeft);
-  };
-
-  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
-    if (!isDragging || !marqueeRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - marqueeRef.current.offsetLeft;
-    const walk = (x - startX) * 2;
-    marqueeRef.current.scrollLeft = scrollLeft - walk;
-  };
-
-  const handleMouseUp = () => setIsDragging(false);
-
-  const handleTouchStart = (e: TouchEvent<HTMLDivElement>) => {
-    if (!marqueeRef.current) return;
-    setIsDragging(true);
-    setStartX(e.touches[0].pageX - marqueeRef.current.offsetLeft);
-    setScrollLeft(marqueeRef.current.scrollLeft);
-  };
-
-  const handleTouchMove = (e: TouchEvent<HTMLDivElement>) => {
-    if (!isDragging || !marqueeRef.current) return;
-    const x = e.touches[0].pageX - marqueeRef.current.offsetLeft;
-    const walk = (x - startX) * 2;
-    marqueeRef.current.scrollLeft = scrollLeft - walk;
-  };
-
-  const handleTouchEnd = () => setIsDragging(false);
 
   useEffect(() => {
     const scrollPosition = sessionStorage.getItem("scrollPosition");
@@ -120,7 +67,6 @@ const Events: FC = () => {
         const idToken = await (user as User).getIdToken();
         config.headers = { Authorization: `Bearer ${idToken}` };
       }
-      console.log("Fetching events with cursor:", nextCursor);
 
       const response = await axios.get(
         `https://partynbackend-production.up.railway.app/events`,
@@ -132,7 +78,6 @@ const Events: FC = () => {
           },
         }
       );
-      console.log("Fetched events response:", response.data);
 
       if (response.data && response.data.events) {
         setEvents((prev) => [...prev, ...response.data.events]);

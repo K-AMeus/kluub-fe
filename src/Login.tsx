@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect, FormEvent } from "react";
+import { FC, useState, useEffect, FormEvent } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "./authentication/AuthContext";
 import "./index.css";
