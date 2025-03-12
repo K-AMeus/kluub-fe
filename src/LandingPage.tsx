@@ -20,10 +20,10 @@ const LandingPage: FC = () => {
     .resize(auto());
 
   useEffect(() => {
-    const originalStyle = window.getComputedStyle(document.body).overflow;
-    document.body.style.overflow = "hidden";
+    const originalStyle = window.getComputedStyle(document.body).overflowX;
+    document.body.style.overflowX = "hidden";
     return () => {
-      document.body.style.overflow = originalStyle;
+      document.body.style.overflowX = originalStyle;
     };
   }, []);
 
@@ -32,14 +32,14 @@ const LandingPage: FC = () => {
   };
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-black">
+    <div className="flex flex-col h-screen w-screen bg-black">
       {/* Background Collage */}
-      <div className="flex-grow relative">
-        <div className="absolute inset-0 overflow-hidden">
+      <div className="flex-grow relative ">
+        <div className="absolute inset-0 overflow-hidden hidden md:block">
           <AdvancedImage
             cldImg={collageImage}
             alt="Collage"
-            className="h-full object-cover max-w-none transform scale-[0.82] translate-x-[10%] translate-y-[-6%] origin-right"
+            className="w-full h-full object-cover translate-x-[20%] scale-[0.87] translate-y-[-11%] origin-bottom"
           />
         </div>
 
@@ -74,7 +74,7 @@ const LandingPage: FC = () => {
                 {/* Front Rectangle */}
                 <button
                   aria-label="Select Tallinn"
-                  className="relative z-10 w-40 h-12 md:w-64 md:h-20 text-xl md:text-3xl text-[#929292]
+                  className="relative z-10 w-40 h-12 md:w-64 md:h-20 text-xl md:text-[2rem] text-[#929292]
                             font-dela-gothic-one font-black bg-[#494725] border-2 border-[#696969]
                             uppercase flex items-end justify-center pb-2.5 md:pb-6 custom-text-shadow tracking-widest !cursor-default leading-none"
                   disabled
@@ -99,7 +99,7 @@ const LandingPage: FC = () => {
                   <button
                     onClick={() => handleCitySelect("Tartu")}
                     aria-label="Select Tartu"
-                    className="relative z-10 w-36 h-12 md:w-60 md:h-20 text-xl md:text-3xl text-white
+                    className="relative z-10 w-36 h-12 md:w-60 md:h-20 text-xl md:text-[2rem] text-white
                                 font-dela-gothic-one font-black bg-[#E4DD3B] border-2 border-white
                                 uppercase flex items-end justify-center pb-2.5 md:pb-6 hover:bg-black
                                 transition-colors duration-200 custom-text-shadow tracking-widest leading-none"
@@ -120,7 +120,7 @@ const LandingPage: FC = () => {
                   {/* Front Rectangle */}
                   <button
                     aria-label="Select Pärnu"
-                    className="relative z-10 w-36 h-12 md:w-60 md:h-20 text-xl md:text-3xl text-[#929292]
+                    className="relative z-10 w-36 h-12 md:w-60 md:h-20 text-xl md:text-[2rem] text-[#929292]
                                 font-dela-gothic-one font-black bg-[#494725] border-2 border-[#696969]
                                 uppercase flex items-end justify-center pb-2.5 md:pb-6 custom-text-shadow tracking-widest !cursor-default leading-none"
                     disabled
@@ -133,7 +133,7 @@ const LandingPage: FC = () => {
           </div>
         </div>
       </div>
-      <div className="absolute bottom-0 w-full z-40">
+      <div className="w-full z-40 absolute bottom-0">
         <Footer />
       </div>
     </div>

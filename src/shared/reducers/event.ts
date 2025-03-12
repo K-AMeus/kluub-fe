@@ -1,4 +1,3 @@
-import axios from "axios";
 import { PageableResponse } from "../helpers.ts";
 import axiosClient from "../../authentication/axiosClient.ts";
 
@@ -6,7 +5,7 @@ export interface Event {
   id: string;
   title: string;
   description: string;
-  location: string;
+  venue: string;
   likeCount: number;
   imageUrl: string;
   fbLink: string;
@@ -29,6 +28,13 @@ export const getAllEvents = async (
 export const getEvent = async (eventId: string): Promise<Event> => {
   const response = await axiosClient.get(
     `/api-event-service/v1/events/${eventId}`
+  );
+  return response.data;
+};
+
+export const getTopPickEvents = async (): Promise<PageableResponse<Event>> => {
+  const response = await axiosClient.get(
+    `/api/event-service/v1/events/filter/top-picks`
   );
   return response.data;
 };

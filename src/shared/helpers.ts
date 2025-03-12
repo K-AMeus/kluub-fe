@@ -19,3 +19,15 @@ export interface PageableResponse<T> {
   totalElement: number;
   totalPages: number;
 }
+
+export const formatDate = (dateTime: string): string => {
+  if (!dateTime) return "";
+  const date = new Date(dateTime);
+
+  const day = date.getDate();
+  const formattedDay = day < 10 ? `0${day}` : `${day}`;
+
+  return `${formattedDay} ${date.toLocaleString("default", {
+    month: "short",
+  })}`;
+};

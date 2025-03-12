@@ -7,11 +7,11 @@ import Header from "./shared/Header.tsx";
 import PrivateRoute from "./authentication/PrivateRoute";
 import ProtectedRoute from "./authentication/ProtectedRoute";
 
-const Events = React.lazy(() => import("./Events"));
+const Events = React.lazy(() => import("./events/Events.tsx"));
 const Contact = React.lazy(() => import("./Contact"));
 const Login = React.lazy(() => import("./Login"));
 const Profile = React.lazy(() => import("./Profile"));
-const EventDetail = React.lazy(() => import("./EventDetail"));
+const EventDetail = React.lazy(() => import("./events/EventDetail"));
 const AdminPanel = React.lazy(() => import("./AdminPanel"));
 
 const LoadingFallback: React.FC = () => (
