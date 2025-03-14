@@ -1,6 +1,6 @@
 import { FC, useEffect, useState, useRef, useMemo } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { User } from "firebase/auth";
 import { useAuth } from "../authentication/AuthContext.tsx";
 import { LazyLoadImage } from "react-lazy-load-image-component";
@@ -9,20 +9,24 @@ import "../index.css";
 import Footer from "../shared/Footer.tsx";
 import FilterBar from "./FilterBar.tsx";
 import { TopPicks, TopPickEvents } from "./TopPicks.tsx";
+import { getEventsByCity } from "../shared/reducers/event.ts";
 
 const Events: FC = () => {
   const [events, setEvents] = useState<EventItem[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
-  const [setIsWideScreen] = useState<boolean>(window.innerWidth > 1024);
   const { user } = useAuth();
-  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [page, setPage] = useState<number>(0);
   const [hasMore, setHasMore] = useState<boolean>(true);
+  const fetchingRef = useRef<boolean>(false);
+
   const navigate = useNavigate();
   const [likingEventIds, setLikingEventIds] = useState<Set<string>>(
     () => new Set()
   );
-  const fetchingRef = useRef<boolean>(false);
+
+  const [searchParams] = useSearchParams();
+  const cityParam = searchParams.get("city") || "Tartu"; // fallback
 
   const [filterDate, setFilterDate] = useState<string>("");
   const [filterVenue, setFilterVenue] = useState<string>("");
@@ -51,9 +55,7 @@ const Events: FC = () => {
   };
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsWideScreen(window.innerWidth > 1024);
-    };
+    const handleResize = () => {};
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -61,6 +63,7 @@ const Events: FC = () => {
   const fetchEvents = async () => {
     if (fetchingRef.current || !hasMore) return;
     fetchingRef.current = true;
+
     try {
       const config: { headers?: Record<string, string> } = {};
       if (user) {
@@ -68,23 +71,12 @@ const Events: FC = () => {
         config.headers = { Authorization: `Bearer ${idToken}` };
       }
 
-      const response = await axios.get(
-        `https://partynbackend-production.up.railway.app/events`,
-        {
-          ...config,
-          params: {
-            cursor: nextCursor,
-            size: 10,
-          },
-        }
-      );
+      const pageData = await getEventsByCity(cityParam, page, 10);
+      if (pageData.content && pageData.content.length > 0) {
+        setEvents((prev) => [...prev, ...pageData.content]);
 
-      if (response.data && response.data.events) {
-        setEvents((prev) => [...prev, ...response.data.events]);
-        setNextCursor(response.data.nextCursor);
-        setHasMore(response.data.hasMore);
+        setHasMore(!pageData.last);
       } else {
-        setError("Unexpected response format from server.");
         setHasMore(false);
       }
     } catch (err) {
@@ -96,13 +88,17 @@ const Events: FC = () => {
     }
   };
 
-  // Fetch initial events when first loaded (or user changes)
   useEffect(() => {
-    if (!fetchingRef.current && hasMore && events.length === 0) {
+    setEvents([]);
+    setPage(0);
+    setHasMore(true);
+  }, [cityParam]);
+
+  useEffect(() => {
+    if (!fetchingRef.current && hasMore) {
       fetchEvents();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [page, user]);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -261,7 +257,7 @@ const Events: FC = () => {
                     <div className="absolute inset-0 pointer-events-none"></div>
                     <LazyLoadImage
                       src={event.imageUrl}
-                      alt={event.name}
+                      alt={event.title}
                       effect="blur"
                       className="w-full h-48 sm:h-full object-cover border border-[#E4DD3B]"
                     />
@@ -270,7 +266,7 @@ const Events: FC = () => {
                   {/* Event Main Info */}
                   <div className="sm:w-1/3 flex flex-col justify-start sm:pl-14 mt-4 sm:mt-6 text-left group">
                     <h2 className="text-lg sm:text-[1.50rem] font-dela-gothic-one text-white uppercase">
-                      {event.name}
+                      {event.title}
                     </h2>
                     <p
                       className="leading-[1.25] text-[1rem] sm:text-[1rem] text-balance text-gray-100 font-black font-montserrat mt-4"
@@ -315,7 +311,7 @@ const Events: FC = () => {
                         <circle cx="12" cy="10" r="3" stroke="#FFFFFF" />
                       </svg>
                       <p className="sm:text-[1.1rem] text-white font-montserrat-medium ml-2">
-                        {event.location}
+                        {event.venue}
                       </p>
                     </div>
 
@@ -333,13 +329,13 @@ const Events: FC = () => {
                           />
                         </svg>
                         <p className="sm:text-[1.1rem] text-white font-montserrat-medium ml-2">
-                          {new Date(event.dateTime).toLocaleTimeString([], {
+                          {new Date(event.openTime).toLocaleTimeString([], {
                             hour: "2-digit",
                             minute: "2-digit",
                             hour12: false,
                           })}{" "}
                           -{" "}
-                          {new Date(event.endDateTime).toLocaleTimeString([], {
+                          {new Date(event.closeTime).toLocaleTimeString([], {
                             hour: "2-digit",
                             minute: "2-digit",
                             hour12: false,
@@ -369,9 +365,7 @@ const Events: FC = () => {
                       </svg>
 
                       <p className="sm:text-[1.1rem] text-white font-montserrat-medium font-bold">
-                        {event.ticketPrice > 0
-                          ? `€${event.ticketPrice}`
-                          : "FREE"}
+                        {event.ticketPrice > 0 ? `€${event.ticket}` : "FREE"}
                       </p>
                     </div>
 
@@ -443,11 +437,10 @@ const Events: FC = () => {
           )}
         </div>
 
-        {/* Load More / Loading / No more */}
-        {hasMore && !fetchingRef.current && events.length > 0 && (
+        {hasMore && filteredEvents.length > 0 && !fetchingRef.current && (
           <div className="flex justify-center mt-8">
             <button
-              onClick={fetchEvents}
+              onClick={() => setPage((prev) => prev + 1)} // go to next page
               className="px-6 py-2 bg-[#E4DD3B] text-black font-montserrat-bolder font-bold hover:bg-yellow-400 transition-colors duration-200 cursor-pointer"
             >
               Load More

@@ -1,18 +1,17 @@
-import React, { FC, useState, useEffect, FormEvent, ChangeEvent } from "react";
-import axios from "axios";
+import { FC, useState, useEffect, FormEvent, ChangeEvent } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import { useAuth } from "./authentication/AuthContext";
 import { getAuth } from "firebase/auth";
+import { createEvent } from "./shared/reducers/event";
 
-interface AdminPanelProps {}
-
-const AdminPanel: FC<AdminPanelProps> = () => {
-  const [name, setName] = useState("");
-  const [dateTime, setDateTime] = useState("");
-  const [endDateTime, setEndDateTime] = useState("");
-  const [ticketPrice, setTicketPrice] = useState("");
+const AdminPanel: FC = () => {
+  const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [location, setLocation] = useState("");
+  const [venue, setVenue] = useState("");
+  const [city, setCity] = useState("");
+  const [ticket, setTicket] = useState(0);
+  const [openTime, setOpenTime] = useState("");
+  const [closeTime, setCloseTime] = useState("");
   const [topPick, setTopPick] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -55,44 +54,38 @@ const AdminPanel: FC<AdminPanelProps> = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    const eventData = {
-      name,
-      dateTime,
-      endDateTime,
-      ticketPrice: parseInt(ticketPrice, 10),
-      description,
-      location,
-      topPick,
-    };
-
-    const formData = new FormData();
-    formData.append("event", JSON.stringify(eventData));
-    if (file) {
-      formData.append("file", file);
-    }
-
     try {
-      const idToken = await auth.currentUser?.getIdToken(true);
-      await axios.post(
-        "https://partynbackend-production.up.railway.app/events",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${idToken}`,
-          },
-        }
-      );
+      const openTimeUTC = new Date(openTime).toISOString();
+      const closeTimeUTC = new Date(closeTime).toISOString();
+      const eventData = {
+        title,
+        description,
+        venue,
+        city,
+        likeCount: 0,
+        fbLink: "",
+        imageUrl: "",
+        ticket,
+        openTime: openTimeUTC,
+        closeTime: closeTimeUTC,
+        topPick,
+      };
+
+      const token = await user.getIdToken();
+      console.log("JWT token:", token);
+
+      await createEvent(eventData, file || undefined);
 
       setSuccess("Event posted successfully!");
       setError(null);
 
-      setName("");
-      setDateTime("");
-      setEndDateTime("");
-      setTicketPrice("");
+      setTitle("");
       setDescription("");
-      setLocation("");
+      setVenue("");
+      setCity("");
+      setTicket(0);
+      setOpenTime("");
+      setCloseTime("");
       setTopPick(false);
       setFile(null);
 
@@ -114,14 +107,14 @@ const AdminPanel: FC<AdminPanelProps> = () => {
         {success && <p className="text-green-500 text-center">{success}</p>}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-bold mb-2" htmlFor="name">
-              Event Name
+            <label className="block text-sm font-bold mb-2" htmlFor="title">
+              Event Title
             </label>
             <input
               type="text"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              id="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
               className="w-full p-3 bg-gray-800 rounded-lg focus:ring-2 focus:ring-blue-500"
               required
             />
@@ -132,9 +125,9 @@ const AdminPanel: FC<AdminPanelProps> = () => {
             </label>
             <input
               type="datetime-local"
-              id="dateTime"
-              value={dateTime}
-              onChange={(e) => setDateTime(e.target.value)}
+              id="openTime"
+              value={openTime}
+              onChange={(e) => setOpenTime(e.target.value)}
               className="w-full p-3 bg-gray-800 rounded-lg focus:ring-2 focus:ring-blue-500"
               required
             />
@@ -148,9 +141,9 @@ const AdminPanel: FC<AdminPanelProps> = () => {
             </label>
             <input
               type="datetime-local"
-              id="endDateTime"
-              value={endDateTime}
-              onChange={(e) => setEndDateTime(e.target.value)}
+              id="closeTime"
+              value={closeTime}
+              onChange={(e) => setCloseTime(e.target.value)}
               className="w-full p-3 bg-gray-800 rounded-lg focus:ring-2 focus:ring-blue-500"
               required
             />
@@ -164,9 +157,9 @@ const AdminPanel: FC<AdminPanelProps> = () => {
             </label>
             <input
               type="number"
-              id="ticketPrice"
-              value={ticketPrice}
-              onChange={(e) => setTicketPrice(e.target.value)}
+              id="ticket"
+              value={ticket}
+              onChange={(e) => setTicket(Number(e.target.value))}
               className="w-full p-3 bg-gray-800 rounded-lg focus:ring-2 focus:ring-blue-500"
               required
             />
@@ -192,13 +185,55 @@ const AdminPanel: FC<AdminPanelProps> = () => {
             </label>
             <input
               type="text"
-              id="location"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
+              id="venue"
+              value={venue}
+              onChange={(e) => setVenue(e.target.value)}
               className="w-full p-3 bg-gray-800 rounded-lg focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
+          <div>
+            <p className="block text-sm font-bold mb-2">City</p>
+            <div className="flex space-x-4">
+              <label htmlFor="city-tallinn">
+                <input
+                  type="radio"
+                  id="city-tallinn"
+                  name="city"
+                  value="Tallinn"
+                  checked={city === "Tallinn"}
+                  onChange={(e) => setCity(e.target.value)}
+                  required
+                />
+                Tallinn
+              </label>
+              <label htmlFor="city-tartu">
+                <input
+                  type="radio"
+                  id="city-tartu"
+                  name="city"
+                  value="Tartu"
+                  checked={city === "Tartu"}
+                  onChange={(e) => setCity(e.target.value)}
+                  required
+                />
+                Tartu
+              </label>
+              <label htmlFor="city-parnu">
+                <input
+                  type="radio"
+                  id="city-parnu"
+                  name="city"
+                  value="Pärnu"
+                  checked={city === "Pärnu"}
+                  onChange={(e) => setCity(e.target.value)}
+                  required
+                />
+                Pärnu
+              </label>
+            </div>
+          </div>
+
           <div className="flex items-center">
             <input
               type="checkbox"

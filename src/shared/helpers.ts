@@ -18,6 +18,7 @@ export interface PageableResponse<T> {
   pageable: Pageable;
   totalElement: number;
   totalPages: number;
+  last: boolean;
 }
 
 export const formatDate = (dateTime: string): string => {
