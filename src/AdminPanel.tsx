@@ -71,9 +71,6 @@ const AdminPanel: FC = () => {
         topPick,
       };
 
-      const token = await user.getIdToken();
-      console.log("JWT token:", token);
-
       await createEvent(eventData, file || undefined);
 
       setSuccess("Event posted successfully!");
