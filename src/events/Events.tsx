@@ -89,7 +89,7 @@ const Events: FC = () => {
         config.headers = { Authorization: `Bearer ${idToken}` };
       }
 
-      const pageData = await getEventsByCity(cityParam, page, 10, user?.uid);
+      const pageData = await getEventsByCity(cityParam, page, 10);
       if (pageData.content && pageData.content.length > 0) {
         setEvents((prev) => [...prev, ...pageData.content]);
         setHasMore(!pageData.last);
