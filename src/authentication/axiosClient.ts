@@ -2,7 +2,7 @@ import axios from "axios";
 import { firebaseAuth } from "./firebaseConfig";
 
 const axiosClient = axios.create({
-  baseURL: "http://localhost:8080",
+  baseURL: "https://kluubbe-production.up.railway.app",
 });
 
 axiosClient.interceptors.request.use(
@@ -10,10 +10,7 @@ axiosClient.interceptors.request.use(
     const user = firebaseAuth.currentUser;
     if (user) {
       const token = await user.getIdToken();
-      config.headers = {
-        ...config.headers,
-        Authorization: `Bearer ${token}`,
-      };
+      config.headers.set("Authorization", `Bearer ${token}`);
     }
     return config;
   },

@@ -1,43 +1,42 @@
 import { FC, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
 import { useAuth } from "../authentication/AuthContext";
 import Footer from "../shared/Footer";
 import "../index.css";
-
-interface EventType {
-  id: string;
-  name: string;
-  description: string;
-  location: string;
-  dateTime: string;
-  endDateTime: string;
-  imageUrl: string;
-  ticketPrice: number;
-  likeCount: number;
-  likedByUser: boolean;
-}
+import { getEvent } from "../shared/reducers/event.ts";
+import { likeEvent, unlikeEvent } from "../shared/reducers/like.ts";
+import { Event } from "../shared/reducers/event.ts";
+import { LoadingFallback } from "../shared/Loading.tsx";
+import { Cloudinary } from "@cloudinary/url-gen";
+import { fill } from "@cloudinary/url-gen/actions/resize";
 
 const EventDetail: FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [event, setEvent] = useState<EventType | null>(null);
+  const [event, setEvent] = useState<Event | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
   const [isLiking, setIsLiking] = useState<boolean>(false);
+
+  const cld = new Cloudinary({
+    cloud: {
+      cloudName: "dgptexs0w",
+    },
+  });
+
+  const getCloudinaryUrl = (publicId: string, width = 800, height = 600) => {
+    return cld
+      .image(publicId)
+      .resize(fill().width(width).height(height))
+      .toURL();
+  };
 
   useEffect(() => {
     const fetchEvent = async () => {
       if (!id) return;
       try {
-        const config = user
-          ? { headers: { Authorization: `Bearer ${await user.getIdToken()}` } }
-          : {};
-        const response = await axios.get<EventType>(
-          `https://partynbackend-production.up.railway.app/events/${id}`,
-          config
-        );
-        setEvent(response.data);
+        const fetchedEvent = await getEvent(id);
+        setEvent(fetchedEvent);
       } catch (err) {
         console.error("Error fetching event details:", err);
         setError("Error fetching event details. Please try again later.");
@@ -55,31 +54,33 @@ const EventDetail: FC = () => {
     if (isLiking || !event) return;
 
     setIsLiking(true);
-    const currentLikeStatus = event.likedByUser;
+    const wasLiked = event.likedByUser;
 
     // Optimistic UI update
     setEvent({
       ...event,
-      likeCount: currentLikeStatus ? event.likeCount - 1 : event.likeCount + 1,
-      likedByUser: !currentLikeStatus,
+      likeCount: wasLiked ? event.likeCount - 1 : event.likeCount + 1,
+      likedByUser: !wasLiked,
     });
 
     try {
-      const response = await axios.post<EventType>(
-        `https://partynbackend-production.up.railway.app/events/${id}/like`,
-        {},
-        { headers: { Authorization: `Bearer ${await user.getIdToken()}` } }
-      );
-      setEvent(response.data);
+      // Make call to like/unlike
+      const idToken = await user.getIdToken();
+      const userId = user.uid;
+
+      const updatedEvent = wasLiked
+        ? await unlikeEvent(event.id, userId, idToken)
+        : await likeEvent(event.id, userId, idToken);
+
+      // Replace with server's "truth" (which includes the correct likeCount)
+      setEvent(updatedEvent);
     } catch (err) {
       console.error("Error toggling like:", err);
-      // revert optimistic update
+      // Revert optimistic update
       setEvent({
         ...event,
-        likeCount: currentLikeStatus
-          ? event.likeCount + 1
-          : event.likeCount - 1,
-        likedByUser: currentLikeStatus,
+        likeCount: wasLiked ? event.likeCount + 1 : event.likeCount - 1,
+        likedByUser: wasLiked,
       });
       alert("Failed to update like status. Please try again.");
     } finally {
@@ -91,8 +92,10 @@ const EventDetail: FC = () => {
     return <p className="text-red-500 text-center">{error}</p>;
   }
   if (!event) {
-    return <p className="text-white text-center">Loading...</p>;
+    return <LoadingFallback />;
   }
+
+  const cloudinaryUrl = getCloudinaryUrl(event.imageUrl);
 
   return (
     <div className="relative min-h-screen flex flex-col text-white font-montserrat-medium">
@@ -101,9 +104,9 @@ const EventDetail: FC = () => {
       <div className="relative py-12 sm:max-w-6xl w-full sm:mx-auto px-8 flex-grow">
         <div className="relative">
           <img
-            src={event.imageUrl}
-            alt={event.name}
-            className="w-full h-96 object-cover rounded-lg mb-4 filter blur-sm"
+            src={cloudinaryUrl}
+            alt={event.title}
+            className="w-full h-96 object-cover rounded-lg mb-4 filter blur-sm "
           />
           {/* Date Bubble */}
           <div className="absolute top-4 left-4 z-20">
@@ -113,9 +116,9 @@ const EventDetail: FC = () => {
               style={{ transform: "rotate(-15deg)" }}
             >
               <div className="text-center">
-                <p>{new Date(event.dateTime).getDate()}</p>
+                <p>{new Date(event.openTime).getDate()}</p>
                 <p>
-                  {new Date(event.dateTime).toLocaleString("default", {
+                  {new Date(event.openTime).toLocaleString("default", {
                     month: "short",
                   })}
                 </p>
@@ -124,9 +127,9 @@ const EventDetail: FC = () => {
           </div>
 
           {/* Overlay Title */}
-          <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center text-center p-4 border-2 border-white">
+          <div className="absolute inset-0 flex flex-col justify-center items-center text-center p-4 border-2 border-white">
             <h1 className="text-lg sm:text-[2.00rem] font-dela-gothic-one text-white uppercase">
-              {event.name}
+              {event.title}
             </h1>
           </div>
         </div>
@@ -155,7 +158,7 @@ const EventDetail: FC = () => {
                   <circle cx="12" cy="10" r="3" stroke="#FFFFFF" />
                 </svg>
                 <p className="text-[1.1rem] text-white font-montserrat-medium ml-2">
-                  {event.location}
+                  {event.venue}
                 </p>
               </div>
 
@@ -178,13 +181,13 @@ const EventDetail: FC = () => {
                   />
                 </svg>
                 <p className="text-[1.1rem] text-white font-montserrat-medium ml-2">
-                  {new Date(event.dateTime).toLocaleTimeString([], {
+                  {new Date(event.openTime).toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
                     hour12: false,
                   })}{" "}
                   -{" "}
-                  {new Date(event.endDateTime).toLocaleTimeString([], {
+                  {new Date(event.closeTime).toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
                     hour12: false,
@@ -214,7 +217,7 @@ const EventDetail: FC = () => {
                   </g>
                 </svg>
                 <p className="text-[1.1rem] text-white font-montserrat-medium ml-2">
-                  {event.ticketPrice > 0 ? `€${event.ticketPrice}` : "FREE"}
+                  {event.ticket > 0 ? `€${event.ticket}` : "FREE"}
                 </p>
               </div>
 

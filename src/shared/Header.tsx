@@ -1,5 +1,5 @@
 import { FC, useState, useRef, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Dialog, DialogPanel } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { FaInstagram, FaFacebookF, FaTiktok } from "react-icons/fa";
@@ -82,13 +82,12 @@ const NavigationLinks: FC<NavigationLinksProps> = ({
 const NavigationLinksVertical: FC<NavigationLinksProps> = ({
   user,
   isAdmin,
-  onLinkClick,
 }) => {
+  const navigate = useNavigate();
   const links = [
     { name: "EVENTS", href: "/events" },
     { name: "CONTACT", href: "/contact" },
   ];
-
   if (!user) {
     links.push({ name: "SIGN IN", href: "/auth?mode=login" });
   }
@@ -115,7 +114,7 @@ const NavigationLinksVertical: FC<NavigationLinksProps> = ({
                        tracking-wide hover:bg-black"
             onClick={() => {
               window.scrollTo(0, 0);
-              if (onLinkClick) onLinkClick();
+              navigate(item.href);
             }}
           >
             {item.name}
@@ -130,9 +129,7 @@ const NavigationLinksVertical: FC<NavigationLinksProps> = ({
           <Link
             to="/admin"
             className="relative z-10 inline-block w-40 px-4 py-1 bg-black text-white border-2 border-white font-montserrat-medium uppercase text-center hover:bg-gray-800 transition-colors duration-200"
-            onClick={() => {
-              if (onLinkClick) onLinkClick();
-            }}
+            onClick={() => navigate("/admin")}
           >
             Admin Panel
           </Link>
@@ -268,16 +265,19 @@ const Header: FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location]);
 
   const handleProfile = () => {
     navigate("/profile");
-    setMobileMenuOpen(false);
   };
 
   const handleLogout = async () => {
     await logout();
     navigate("/");
-    setMobileMenuOpen(false);
   };
 
   return (
@@ -346,7 +346,6 @@ const Header: FC = () => {
                            after:h-1 after:bg-[#E4DD3B] after:transition-all after:duration-300
                            hover:after:w-full"
                 onClick={() => {
-                  setMobileMenuOpen(false);
                   window.scrollTo(0, 0);
                 }}
               >

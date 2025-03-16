@@ -1,12 +1,11 @@
 import { FC, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "./index.css";
 import { useTranslation } from "react-i18next";
 import Footer from "./shared/Footer.tsx";
-
 import { Cloudinary } from "@cloudinary/url-gen";
 import { AdvancedImage } from "@cloudinary/react";
 import { auto } from "@cloudinary/url-gen/actions/resize";
+import "./index.css";
 
 const LandingPage: FC = () => {
   const { t } = useTranslation();
@@ -19,17 +18,16 @@ const LandingPage: FC = () => {
     .quality("auto")
     .resize(auto());
 
-  useEffect(() => {
-    const originalStyle = window.getComputedStyle(document.body).overflowX;
-    document.body.style.overflowX = "hidden";
-    return () => {
-      document.body.style.overflowX = originalStyle;
-    };
-  }, []);
-
   const handleCitySelect = (cityName: string) => {
     navigate(`/events?city=${cityName}`);
   };
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
 
   return (
     <div className="flex flex-col h-screen w-screen bg-black">
@@ -39,7 +37,7 @@ const LandingPage: FC = () => {
           <AdvancedImage
             cldImg={collageImage}
             alt="Collage"
-            className="w-full h-full object-cover translate-x-[20%] scale-[0.87] translate-y-[-11%] origin-bottom"
+            className="h-full object-cover max-w-none transform scale-[0.90] translate-y-[-5%] translate-x-[20%] origin-right"
           />
         </div>
 
@@ -76,7 +74,7 @@ const LandingPage: FC = () => {
                   aria-label="Select Tallinn"
                   className="relative z-10 w-40 h-12 md:w-64 md:h-20 text-xl md:text-[2rem] text-[#929292]
                             font-dela-gothic-one font-black bg-[#494725] border-2 border-[#696969]
-                            uppercase flex items-end justify-center pb-2.5 md:pb-6 custom-text-shadow tracking-widest !cursor-default leading-none"
+                            uppercase flex items-end justify-center pb-2.5 md:pb-5.5 custom-text-shadow tracking-widest !cursor-default leading-none"
                   disabled
                 >
                   Tallinn
@@ -101,7 +99,7 @@ const LandingPage: FC = () => {
                     aria-label="Select Tartu"
                     className="relative z-10 w-36 h-12 md:w-60 md:h-20 text-xl md:text-[2rem] text-white
                                 font-dela-gothic-one font-black bg-[#E4DD3B] border-2 border-white
-                                uppercase flex items-end justify-center pb-2.5 md:pb-6 hover:bg-black
+                                uppercase flex items-end justify-center pb-2.5 md:pb-5.5 hover:bg-black
                                 transition-colors duration-200 custom-text-shadow tracking-widest leading-none"
                   >
                     Tartu
@@ -122,7 +120,7 @@ const LandingPage: FC = () => {
                     aria-label="Select Pärnu"
                     className="relative z-10 w-36 h-12 md:w-60 md:h-20 text-xl md:text-[2rem] text-[#929292]
                                 font-dela-gothic-one font-black bg-[#494725] border-2 border-[#696969]
-                                uppercase flex items-end justify-center pb-2.5 md:pb-6 custom-text-shadow tracking-widest !cursor-default leading-none"
+                                uppercase flex items-end justify-center pb-2.5 md:pb-5.5 custom-text-shadow tracking-widest !cursor-default leading-none"
                     disabled
                   >
                     Pärnu

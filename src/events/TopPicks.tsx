@@ -59,7 +59,7 @@ export const TopPickEvents: FC = () => {
       loop={0}
     >
       {loading ? (
-        <div className="text-xl mx-4">LOADING 🫨</div>
+        <div className="text-xl mx-4">LOADING...</div>
       ) : topEvents.length === 0 ? (
         <div className="text-xl mx-4">😤 NO TOP PICKS AT THE MOMENT 😤</div>
       ) : (

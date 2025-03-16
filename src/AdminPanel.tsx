@@ -69,6 +69,7 @@ const AdminPanel: FC = () => {
         openTime: openTimeUTC,
         closeTime: closeTimeUTC,
         topPick,
+        likedByUser: false,
       };
 
       await createEvent(eventData, file || undefined);

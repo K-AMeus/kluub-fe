@@ -32,3 +32,4 @@ export const formatDate = (dateTime: string): string => {
     month: "short",
   })}`;
 };
+

@@ -7,11 +7,19 @@ import Header from "./shared/Header.tsx";
 import PrivateRoute from "./authentication/PrivateRoute";
 import ProtectedRoute from "./authentication/ProtectedRoute";
 
-const Events = React.lazy(() => import("./events/Events.tsx"));
-const Contact = React.lazy(() => import("./Contact"));
-const Login = React.lazy(() => import("./Login"));
-const Profile = React.lazy(() => import("./Profile"));
-const EventDetail = React.lazy(() => import("./events/EventDetail"));
+const Events = React.lazy(
+  () => import(/* webpackPrefetch: true */ "./events/Events.tsx")
+);
+const Contact = React.lazy(
+  () => import(/* webpackPrefetch: true */ "./Contact")
+);
+const Profile = React.lazy(
+  () => import(/* webpackPrefetch: true */ "./Profile")
+);
+const Login = React.lazy(() => import(/* webpackPrefetch: true */ "./Login"));
+const EventDetail = React.lazy(
+  () => import(/* webpackPrefetch: true */ "./events/EventDetail")
+);
 const AdminPanel = React.lazy(() => import("./AdminPanel"));
 
 const LoadingFallback: React.FC = () => (

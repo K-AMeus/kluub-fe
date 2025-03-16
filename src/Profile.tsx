@@ -1,7 +1,10 @@
-import React, { FC, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "./authentication/AuthContext";
 import Footer from "./shared/Footer";
+import { getLikedEvents } from "./shared/reducers/like";
+import { Event as AppEvent } from "./shared/reducers/event";
+import { PageableResponse } from "./shared/helpers";
 
 interface EventItem {
   id: string;
@@ -9,7 +12,7 @@ interface EventItem {
 }
 
 interface LikedEventsResponse {
-  events: EventItem[];
+  events: AppEvent[];
   currentPage: number;
   totalPages: number;
 }
@@ -38,23 +41,18 @@ const Profile: FC = () => {
   useEffect(() => {
     const fetchLikedEvents = async () => {
       if (!user) return;
-
       setIsLoading(true);
       try {
-        const idToken = await user.getIdToken();
-        const response = await axios.get<LikedEventsResponse>(
-          "https://partynbackend-production.up.railway.app/events/liked?page=0&size=20",
-          { headers: { Authorization: `Bearer ${idToken}` } }
-        );
+        const data = (await getLikedEvents(
+          user.uid
+        )) as PageableResponse<AppEvent>;
 
-        if (response.data && response.data.events) {
-          setLikedEvents(response.data.events);
-          setCurrentPage(response.data.currentPage || 0);
-          setTotalPages(response.data.totalPages || 0);
-        } else {
-          setLikedEvents([]);
-          setError("Unexpected response format from server.");
-        }
+        setLikedEvents(
+          data.content.map((event: AppEvent) => ({
+            id: event.id,
+            name: event.title,
+          }))
+        );
       } catch (err) {
         console.error("Error fetching liked events:", err);
         setError("Failed to fetch liked events. Please try again later.");
@@ -78,7 +76,12 @@ const Profile: FC = () => {
       );
 
       if (response.data && response.data.events) {
-        setLikedEvents(response.data.events);
+        setLikedEvents(
+          response.data.events.map((event: AppEvent) => ({
+            id: event.id,
+            name: event.title,
+          }))
+        );
         setCurrentPage(response.data.currentPage || 0);
         setTotalPages(response.data.totalPages || 0);
       } else {

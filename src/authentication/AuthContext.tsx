@@ -1,4 +1,4 @@
-import React, {
+import {
   createContext,
   useEffect,
   useState,
@@ -77,6 +77,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsAdmin(false);
   };
 
+  const LoadingFallback: React.FC = () => (
+    <div className="flex justify-center items-center min-h-screen">
+      <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-white"></div>
+    </div>
+  );
+
   return (
     <AuthContext.Provider
       value={{
@@ -90,7 +96,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         logout,
       }}
     >
-      {!loading ? children : <div>Loading authentication...</div>}
+      {!loading ? children : <LoadingFallback />}
     </AuthContext.Provider>
   );
 };

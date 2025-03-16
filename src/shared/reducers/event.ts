@@ -6,6 +6,7 @@ export interface Event {
   title: string;
   description: string;
   venue: string;
+  city: string;
   likeCount: number;
   imageUrl: string;
   fbLink: string;
@@ -13,22 +14,24 @@ export interface Event {
   openTime: string;
   closeTime: string;
   topPick: boolean;
+  likedByUser: boolean;
 }
 
 export const getEventsByCity = async (
   city: string,
   page: number = 0,
-  size: number = 10
+  size: number = 10,
+  userId?: string
 ): Promise<PageableResponse<Event>> => {
   const response = await axiosClient.get(
-    `/api/event-service/v1/events?city=${city}&page=${page}&size=${size}`
+    `/api/event-service/v1/events?city=${city}&page=${page}&size=${size}&userId=${userId}`
   );
   return response.data;
 };
 
 export const getEvent = async (eventId: string): Promise<Event> => {
   const response = await axiosClient.get(
-    `/api-event-service/v1/events/${eventId}`
+    `/api/event-service/v1/events/${eventId}`
   );
   return response.data;
 };
