@@ -20,11 +20,10 @@ export interface Event {
 export const getEventsByCity = async (
   city: string,
   page: number = 0,
-  size: number = 10,
-  userId?: string
+  size: number = 10
 ): Promise<PageableResponse<Event>> => {
   const response = await axiosClient.get(
-    `/api/event-service/v1/events?city=${city}&page=${page}&size=${size}&userId=${userId}`
+    `/api/event-service/v1/events?city=${city}&page=${page}&size=${size}`
   );
   return response.data;
 };
