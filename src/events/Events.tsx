@@ -510,7 +510,7 @@ const Events: FC = () => {
                         {event.title}
                       </h2>
                       <p
-                        className="leading-[1.25] text-[0.9rem] sm:text-[0.9rem] text-balance text-white font-montserrat mt-3"
+                        className="leading-[1.25] text-[0.9rem] sm:text-[1.0rem] text-balance text-white font-montserrat mt-3"
                         style={{ wordSpacing: "0.03em" }}
                       >
                         {truncateDescription(
