@@ -28,16 +28,21 @@ export const getEventsByCity = async (
   return response.data;
 };
 
-export const getEvent = async (eventId: string): Promise<Event> => {
-  const response = await axiosClient.get(
-    `/api/event-service/v1/events/${eventId}`
-  );
+export const getEvent = async (
+  eventId: string,
+  userId?: string
+): Promise<Event> => {
+  const url = userId
+    ? `/api/event-service/v1/events/${eventId}?userId=${userId}`
+    : `/api/event-service/v1/events/${eventId}`;
+
+  const response = await axiosClient.get(url);
   return response.data;
 };
 
 export const getTopPickEvents = async (): Promise<PageableResponse<Event>> => {
   const response = await axiosClient.get(
-    `/api/event-service/v1/events/filter/top-picks`
+    `/api/event-service/v1/events/top-picks`
   );
   return response.data;
 };
@@ -60,6 +65,40 @@ export const createEvent = async (
   const response = await axiosClient.post(
     "/api/event-service/v1/events",
     formData
+  );
+
+  return response.data;
+};
+
+export const searchEvents = async (params: {
+  city: string;
+  venue?: string;
+  startDate?: string;
+  endDate?: string;
+  searchText?: string;
+  priceSort?: "asc" | "desc";
+  likesSort?: "asc" | "desc";
+  page?: number;
+  size?: number;
+}): Promise<PageableResponse<Event>> => {
+  const queryParams = new URLSearchParams();
+
+  queryParams.append("city", params.city);
+
+  if (params.venue) queryParams.append("venue", params.venue);
+  if (params.startDate) queryParams.append("startDate", params.startDate);
+  if (params.endDate) queryParams.append("endDate", params.endDate);
+  if (params.searchText) queryParams.append("searchText", params.searchText);
+  if (params.priceSort) queryParams.append("priceSort", params.priceSort);
+  if (params.likesSort) queryParams.append("likesSort", params.likesSort);
+
+  if (params.page !== undefined)
+    queryParams.append("page", params.page.toString());
+  if (params.size !== undefined)
+    queryParams.append("size", params.size.toString());
+
+  const response = await axiosClient.get(
+    `/api/event-service/v1/events/search?${queryParams.toString()}`
   );
 
   return response.data;
