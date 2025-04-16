@@ -578,15 +578,15 @@ const Events: FC = () => {
                         {/* Ticket Price */}
                         <div className="flex items-center mt-3 sm:mt-4">
                           <svg
-                            width="20"
-                            height="20"
+                            width="22"
+                            height="22"
                             viewBox="0 0 512 512"
                             fill="none"
                             stroke="#E4DD3B"
                             strokeWidth="0"
                             className="text-[#E4DD3B]"
                           >
-                            <g fill="#E4DD3B">
+                            <g fill="#E4DD3B" stroke="#E4DD3B" strokeWidth="10">
                               <path
                                 d="M430.337,231.065H81.674c-29.701,0-53.858,24.16-53.858,53.862v49.884v15.976l15.806,2.262
                                 c9.135,1.31,16.03,9.258,16.03,18.483c0,9.225-6.891,17.173-16.022,18.482l-15.814,2.262v15.978v49.892
