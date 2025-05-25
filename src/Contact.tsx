@@ -18,10 +18,10 @@ const teamMemberImageIds = [
 ];
 
 const teamMembers = [
-  { name: "Jan Erik Köst", position: "Bee keeper 1", offset: -40 },
-  { name: "Anastasya Chertova", position: "Bee keeper 2", offset: -30 },
-  { name: "Karl-Andreas Meus", position: "Bee keeper 3", offset: -20 },
-  { name: "Kathy Klassen", position: "Bee keeper 4", offset: -50 },
+  { name: "Jan Erik Köst", position: "Beekeeper 1", offset: -40 },
+  { name: "Anastasya Chertova", position: "Beekeeper 2", offset: -30 },
+  { name: "Karl-Andreas Meus", position: "Beekeeper 3", offset: -20 },
+  { name: "Kathy Klassen", position: "Beekeeper 4", offset: -50 },
 ];
 
 const Contact: FC = () => {
