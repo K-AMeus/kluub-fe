@@ -49,6 +49,8 @@ const Events: FC = () => {
   const [filterPrice, setFilterPrice] = useState<string>("");
   const [sortByLikes, setSortByLikes] = useState<string>("");
 
+  const [notFirst, setNotFirst] = useState(true);
+
   
 
   const truncateDescription = (description: string, length = 80): string => {
@@ -217,50 +219,68 @@ const Events: FC = () => {
   }, [events, filterDate, filterVenue, filterPrice, sortByLikes]);
 
 
-  const observer = useRef<IntersectionObserver | null>(null);
-  const [visibleEventIds, setVisibleEventIds] = useState<Set<string>>(new Set());
-  const prevOpenTimeRef = useRef<string | null>(null); // To store the last openTime
   const [currentStickyDate, setCurrentStickyDate] = useState<string>('');
   const dateRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const previousDate = useRef<string>('');
 
 
 
+useEffect(() => {
+  let lastScrollY = window.scrollY;
 
-  useEffect(() => {
-    const handleIntersection =
-      (entries: IntersectionObserverEntry[]) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const eventId = entry.target.id;
-            const event = filteredEvents.find((event) => event.id === eventId);
-            console.log("new event");
-            setVisibleEventIds((prev) => new Set(prev.add(entry.target.id)));
-            const date = entry.target.getAttribute('data-date');
-            if (date && date !== currentStickyDate) {
-              // Only update if the observed date is different from the current sticky date
-              setCurrentStickyDate(date);
-              console.log("new date:", date);
-            }
-            
-          }
-      });
-    };
+  const handleScroll = () => {
+    const scrollY = window.scrollY;
+    const scrollingDown = scrollY > lastScrollY;
+    lastScrollY = scrollY;
 
-    observer.current = new IntersectionObserver(handleIntersection, {
-      root: null,
-      rootMargin: '0px',
-      threshold: 0.5,
-    });
+    const refs = Object.entries(dateRefs.current)
+      .filter(([, el]) => el !== null)
+      .sort(([, aEl], [, bEl]) =>
+        aEl!.getBoundingClientRect().top - bEl!.getBoundingClientRect().top
+      );
 
-    const eventElements = document.querySelectorAll('.event-item');
-    eventElements.forEach((element) => observer.current?.observe(element));
+    let activeDate: string | null = null;
 
-    return () => {
-      eventElements.forEach((element) => observer.current?.unobserve(element));
-    };
-  }, [filteredEvents]);
+    if (scrollingDown) {
+      for (let [date, el] of refs) {
+        const top = el!.getBoundingClientRect().top;
+        if (top <= 100) {
+          activeDate = date;
+        } else {
+          break;
+        }
+      }
+    } else {
+      for (let i = refs.length - 1; i >= 0; i--) {
+        const [date, el] = refs[i];
+        const top = el!.getBoundingClientRect().top;
+        if (top < 100) {
+          activeDate = date;
+          break;
+        }
+      }
+    }
 
+    // Fallback to first available date bar if nothing matched
+    if (!activeDate && refs.length > 0) {
+      activeDate = refs[0][0]; // refs[0] is [date, element]
+    }
+
+    if (activeDate && activeDate !== currentStickyDate) {
+      setCurrentStickyDate(activeDate);
+    }
+  };
+
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  handleScroll(); // Initialize once on mount
+
+  return () => {
+    window.removeEventListener('scroll', handleScroll);
+  };
+}, [filteredEvents]);
+
+
+  
 
 
 
@@ -269,6 +289,16 @@ const Events: FC = () => {
     const eventDate = new Date(date);
     return eventDate.toLocaleDateString(); // You can change the format based on your needs
   };
+
+const formatDateDisplay = (dateStr) => {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('en-US', {
+    weekday: 'short',  // Sun
+    month: 'short',    // May
+    day: 'numeric'     // 5
+  });
+};
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -318,7 +348,14 @@ const Events: FC = () => {
       <TopPickEvents />
 
       {/* Main Event Listing */}
-      <div className="flex-grow py-6 sm:py-12 sm:max-w-7xl w-full sm:mx-auto px-4 sm:px-8 flex flex-col items-center"  > 
+      <div className="flex-grow py-6 sm:pb-12 sm:pt-0 sm:max-w-7xl w-full sm:mx-auto px-4 sm:px-8 flex flex-col items-center"  > 
+
+        {currentStickyDate && (
+          <div className="w-full mt-10 sticky top-[80px] z-40 py-3 bg-black text-[#fff] font-dela-gothic-one uppercase font-bold text-4xl tracking-wide [text-shadow:_-1px_-1px_0_black,_1px_-1px_0_black,_-1px_1px_0_black,_1px_1px_0_black] text-left">
+            {formatDateDisplay(currentStickyDate)}
+          </div>
+        )}
+
         {error && (
           <p className="text-red-500 text-center font-montserrat-bolder">
             {error}
@@ -330,12 +367,14 @@ const Events: FC = () => {
               <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-white"></div>
             </div>
           ) : (
+
+            /*siia tuleb see date bar mis pidevalt hakkabm */
+
             filteredEvents.map((event, index) => {
               // Transform image with a fixed 300x300 fill
               const transformedUrl = getCloudinaryUrl(event.imageUrl, 400, 300);
-              const currentEventDate = formatDate(event.openTime);
-              const previousEventDate = index > 0 ? formatDate(filteredEvents[index - 1].openTime) : null;
 
+              const notFirst = index !== 0;
               const eventDate = new Date(event.openTime);
               const eventDateStr = eventDate.toDateString(); // Get the event date in string format
               
@@ -348,29 +387,45 @@ const Events: FC = () => {
 
               
 
+              const formattedDateTime = eventDate.toISOString().split('T')[0];
+
+              const isSticky = currentStickyDate === formattedDateTime;
+
+              
+
               return (
 
                 <div>
 
-                  {showDateMarquee && (
+                  {/* Changing non-sticky marquee */}
+                  {showDateMarquee && notFirst && (
                     <div
                       ref={(el: HTMLDivElement | null) => {
                         if (el) {
-                          //console.log(el);
-                          dateRefs.current[eventDateStr] = el; // Set ref for the date section
+                          dateRefs.current[formattedDateTime] = el;
                         }
                       }}
-                      data-date={eventDate.toLocaleDateString('en-GB', {
-                        weekday: 'short',
-                        day: 'numeric',
-                        month: 'short',
-                      })}
-                      className="w-full mb-4 pt-2"
+                      data-date={formattedDateTime}
+                      className="w-full z-41 mb-4 pt-0 border-white font-dela-gothic-one bg-black text-white font-dela-gothic-one uppercase font-bold text-4xl tracking-wide text-left" 
                     >
-                      siin peaks see asi olema
-                      {/* Spacer only, used for scroll detection */}
+                      {formatDateDisplay(formattedDateTime)}
                     </div>
                   )}
+
+                 {showDateMarquee && !notFirst && (
+                    <div
+                      ref={(el: HTMLDivElement | null) => {
+                        if (el) {
+                          dateRefs.current[formattedDateTime] = el;
+                        }
+                      }}
+                      data-date={formattedDateTime}
+                      className="absolute -top-full h-0 overflow-hidden"
+                    >
+                      {formatDateDisplay(formattedDateTime)}
+                    </div>
+                  )}
+
 
                   {/* Event itself */}
                   <div key={event.id} className="relative group mb-10 w-full event-item">
