@@ -46,7 +46,7 @@ const NavigationLinks: FC<NavigationLinksProps> = ({
           {/* Front Rectangle */}
           <Link
             to={item.href}
-            className="relative z-10 inline-block w-40 h-10 px-4 py-1 text-xl bg-black text-white border-2 border-white font-montserrat-medium uppercase text-center transition-colors duration-200 pt-1.5 leading-tight tracking-wide hover:bg-black"
+            className="relative z-10 inline-block w-40 h-10 px-4 py-1 text-xl bg-black text-white border-2 border-white/70 font-montserrat-medium uppercase text-center transition-colors duration-200 pt-1.5 leading-tight tracking-wide hover:bg-black"
             onClick={() => {
               window.scrollTo(0, 0);
               if (onLinkClick) onLinkClick();
@@ -63,7 +63,7 @@ const NavigationLinks: FC<NavigationLinksProps> = ({
           {/* Front Rectangle */}
           <Link
             to="/admin"
-            className="relative z-10 inline-block w-40 px-4 py-1 bg-black text-white border-2 border-white font-montserrat-medium uppercase text-center hover:bg-gray-800 transition-colors duration-200"
+            className="relative z-10 inline-block w-40 px-4 py-1 bg-black text-white border-2 border-white/70 font-montserrat-medium uppercase text-center hover:bg-gray-800 transition-colors duration-200"
             onClick={() => {
               if (onLinkClick) onLinkClick();
             }}
@@ -109,7 +109,7 @@ const NavigationLinksVertical: FC<NavigationLinksProps> = ({
           <Link
             to={item.href}
             className="relative z-10 inline-block w-40 h-10 px-4 py-1 text-xl
-                       bg-black text-white border-2 border-white font-montserrat-medium
+                       bg-black text-white border-2 border-white/70 font-montserrat-medium
                        uppercase text-center transition-colors duration-200 pt-1.5 leading-tight
                        tracking-wide hover:bg-black"
             onClick={() => {
@@ -128,7 +128,7 @@ const NavigationLinksVertical: FC<NavigationLinksProps> = ({
           {/* Front Rectangle */}
           <Link
             to="/admin"
-            className="relative z-10 inline-block w-40 px-4 py-1 bg-black text-white border-2 border-white font-montserrat-medium uppercase text-center hover:bg-gray-800 transition-colors duration-200"
+            className="relative z-10 inline-block w-40 px-4 py-1 bg-black text-white border-2 border-white/70 font-montserrat-medium uppercase text-center hover:bg-gray-800 transition-colors duration-200"
             onClick={() => navigate("/admin")}
           >
             Admin Panel
@@ -192,7 +192,7 @@ const ProfileDropdown: FC<ProfileDropdownProps> = ({
       </button>
       {open && (
         <div
-          className="absolute right-0 top-14 bg-black border-2 border-white text-white
+          className="absolute right-0 top-14 bg-black border-2 border-white/70 text-white
                        font-montserrat-medium w-40 z-50"
         >
           <button
@@ -250,7 +250,7 @@ const MobileProfile: FC<MobileProfileProps> = ({
         <button
           onClick={onLogout}
           className="relative z-10 inline-block w-40 h-10 px-4 py-1 text-xl
-                     bg-black text-white border-2 border-white font-montserrat-medium
+                     bg-black text-white border-2 border-white/70 font-montserrat-medium
                      uppercase text-center transition-colors duration-200 pt-1.5 leading-tight
                      tracking-wide hover:bg-black"
         >
@@ -281,7 +281,7 @@ const Header: FC = () => {
   };
 
   return (
-    <header className="bg-black bg-opacity-100 fixed top-0 -left-1 -right-1 z-50 font-montserrat-medium border-b-2 border-yellow">
+    <header className="bg-black bg-opacity-100 fixed top-0 -left-1 -right-1 z-50 font-montserrat-medium border-b-2 border-white/70">
       <nav className="px-8 lg:px-20 flex items-center justify-between h-20 relative z-10">
         {/* Left Section: Logo */}
         <div className="flex items-center">
@@ -338,7 +338,7 @@ const Header: FC = () => {
       >
         <div className="fixed inset-0 z-40 min-h-screen">
           <DialogPanel className="fixed inset-y-0 right-0 z-40 w-full bg-black bg-opacity-90 backdrop-blur-md overflow-y-auto">
-            <div className="flex items-center justify-between p-3 pl-8 border-b-2 border-white">
+            <div className="flex items-center justify-between p-3 pl-8 border-b-2 border-white/70">
               <Link
                 to="/"
                 className="text-white font-dela-gothic-one text-4xl md:text-5xl

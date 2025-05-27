@@ -66,14 +66,14 @@ const LandingPage: FC = () => {
               <div className="relative">
                 {/* Back Rectangle */}
                 <div
-                  className="absolute z-0 bg-black border-2 border-[#696969] w-40 h-12 md:w-64 md:h-20
+                  className="absolute z-0 bg-black border-2 border-[#696969]/70 w-40 h-12 md:w-64 md:h-20
                             translate-x-2.5 translate-y-2.5"
                 />
                 {/* Front Rectangle */}
                 <button
                   aria-label="Select Tallinn"
                   className="relative z-10 w-40 h-12 md:w-64 md:h-20 text-xl md:text-[2rem] text-[#929292]
-                            font-dela-gothic-one font-black bg-[#494725] border-2 border-[#696969]
+                            font-dela-gothic-one font-black bg-[#494725] border-2 border-[#696969]/70
                             uppercase flex items-end justify-center pb-2.5 md:pb-5.5 custom-text-shadow tracking-widest !cursor-default leading-none"
                   disabled
                 >
@@ -89,7 +89,7 @@ const LandingPage: FC = () => {
                 <div className="relative">
                   {/* Back Rectangle */}
                   <div
-                    className="absolute z-0 bg-black border-2 border-white w-36 h-12 md:w-60 md:h-20
+                    className="absolute z-0 bg-black border-2 border-white/70 w-36 h-12 md:w-60 md:h-20
                                 translate-x-2.5 translate-y-2.5 transition-transform duration-200
                                 group-hover:-translate-x-3 group-hover:-translate-y-3 group-hover:bg-[#E4DD3B]"
                   />
@@ -98,7 +98,7 @@ const LandingPage: FC = () => {
                     onClick={() => handleCitySelect("Tartu")}
                     aria-label="Select Tartu"
                     className="relative z-10 w-36 h-12 md:w-60 md:h-20 text-xl md:text-[2rem] text-white
-                                font-dela-gothic-one font-black bg-[#E4DD3B] border-2 border-white
+                                font-dela-gothic-one font-black bg-[#E4DD3B] border-2 border-white/70
                                 uppercase flex items-end justify-center pb-2.5 md:pb-5.5 hover:bg-black
                                 transition-colors duration-200 custom-text-shadow tracking-widest leading-none"
                   >
@@ -112,14 +112,14 @@ const LandingPage: FC = () => {
                 <div className="relative">
                   {/* Back Rectangle */}
                   <div
-                    className="absolute z-0 bg-black border-2 border-[#696969] w-36 h-12 md:w-60 md:h-20
+                    className="absolute z-0 bg-black border-2 border-[#696969]/70 w-36 h-12 md:w-60 md:h-20
                                 translate-x-2.5 translate-y-2.5"
                   />
                   {/* Front Rectangle */}
                   <button
                     aria-label="Select Pärnu"
                     className="relative z-10 w-36 h-12 md:w-60 md:h-20 text-xl md:text-[2rem] text-[#929292]
-                                font-dela-gothic-one font-black bg-[#494725] border-2 border-[#696969]
+                                font-dela-gothic-one font-black bg-[#494725] border-2 border-[#696969]/70
                                 uppercase flex items-end justify-center pb-2.5 md:pb-5.5 custom-text-shadow tracking-widest !cursor-default leading-none"
                     disabled
                   >

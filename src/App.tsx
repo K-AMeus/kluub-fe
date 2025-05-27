@@ -1,11 +1,26 @@
-import React, { StrictMode, Suspense } from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import React, { StrictMode, Suspense, useEffect } from "react";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  useLocation,
+} from "react-router-dom";
 import "./App.css";
 import { AuthProvider } from "./authentication/AuthContext.tsx";
 import LandingPage from "./LandingPage.tsx";
 import Header from "./shared/Header.tsx";
 import PrivateRoute from "./authentication/PrivateRoute";
 import ProtectedRoute from "./authentication/ProtectedRoute";
+
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+};
 
 const Events = React.lazy(
   () => import(/* webpackPrefetch: true */ "./events/Events.tsx")
@@ -33,9 +48,9 @@ const App: React.FC = () => {
     <StrictMode>
       <Router>
         <AuthProvider>
+          <Header />
+          <ScrollToTop />
           <Suspense fallback={<LoadingFallback />}>
-            <Header />
-
             <Routes>
               <Route path="/" element={<LandingPage />} />
               <Route path="/events" element={<Events />} />

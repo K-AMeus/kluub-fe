@@ -5,6 +5,7 @@ import Footer from "./shared/Footer";
 import { getLikedEvents } from "./shared/reducers/like";
 import { Event as AppEvent } from "./shared/reducers/event";
 import { PageableResponse } from "./shared/helpers";
+import { useNavigate } from "react-router-dom";
 
 interface EventItem {
   id: string;
@@ -17,21 +18,13 @@ interface LikedEventsResponse {
   totalPages: number;
 }
 
-function getColorFromString(str: string): string {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = str.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const color = Math.abs(hash % 360);
-  return `hsl(${color}, 70%, 50%)`;
-}
-
 function getInitials(email?: string | null): string {
   return email ? email.charAt(0).toUpperCase() : "";
 }
 
 const Profile: FC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [likedEvents, setLikedEvents] = useState<EventItem[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(0);
@@ -96,83 +89,109 @@ const Profile: FC = () => {
     }
   };
 
+  const handleEventClick = (eventId: string) => {
+    navigate(`/events/${eventId}`);
+  };
+
   if (!user) {
     return <p className="text-white">Please log in.</p>;
   }
 
   return (
-    <div className="relative min-h-screen flex flex-col justify-center items-center sm:py-12 z-10">
-      <div className="area">
-        <ul className="circles"></ul>
-      </div>
-      <div className="bg-gray-900 p-6 rounded-lg shadow-lg flex flex-col items-center text-white">
-        {user.photoURL ? (
-          <img
-            src={user.photoURL}
-            alt="Profile"
-            className="h-24 w-24 rounded-full mb-4"
-          />
-        ) : (
-          <div
-            className="h-24 w-24 rounded-full flex items-center justify-center text-white text-3xl mb-4"
-            style={{ backgroundColor: getColorFromString(user.email || "") }}
-          >
-            {getInitials(user.email)}
-          </div>
-        )}
-        <h2 className="text-2xl font-semibold">
-          {user.displayName || user.email}
-        </h2>
-        <h3 className="mt-4">Liked Events</h3>
-        {isLoading ? (
-          <p className="mt-2">Loading...</p>
-        ) : error ? (
-          <p className="text-red-500">{error}</p>
-        ) : likedEvents.length > 0 ? (
-          <ul className="mt-4 space-y-2">
-            {likedEvents.map((event) => (
-              <li key={event.id} className="bg-gray-800 p-2 rounded">
-                {event.name}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="mt-4">No liked events</p>
-        )}
+    <div className="relative min-h-screen flex flex-col pt-28 pb-16 items-center z-10">
+      <div className="absolute inset-0 area z-0"></div>
 
-        {/* Pagination Controls */}
-        {totalPages > 1 && (
-          <div className="flex space-x-2 mt-4">
-            {currentPage > 0 && (
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                className="px-3 py-1 bg-gray-700 rounded"
-              >
-                Previous
-              </button>
+      {/* Profile Card */}
+      <div className="relative w-full max-w-md mx-4">
+        {/* Back Rectangle */}
+        <div className="absolute w-full h-full translate-x-1 translate-y-1 bg-[#E4DD3B] z-0"></div>
+
+        <div className="relative z-10 w-full bg-black border border-white/70 p-5 flex flex-col text-white">
+          {/* User Section */}
+          <div className="flex items-center space-x-3 mb-5">
+            {user.photoURL ? (
+              <img
+                src={user.photoURL}
+                alt="Profile"
+                className="h-12 w-12 rounded-full border border-[#E4DD3B]"
+              />
+            ) : (
+              <div className="h-12 w-12 rounded-full flex items-center justify-center text-white text-lg border border-[#E4DD3B] bg-black">
+                {getInitials(user.email)}
+              </div>
             )}
-            {Array.from({ length: totalPages }, (_, index) => (
-              <button
-                key={index}
-                onClick={() => handlePageChange(index)}
-                className={`px-3 py-1 rounded ${
-                  currentPage === index ? "bg-blue-500" : "bg-gray-700"
-                }`}
-              >
-                {index + 1}
-              </button>
-            ))}
-            {currentPage < totalPages - 1 && (
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                className="px-3 py-1 bg-gray-700 rounded"
-              >
-                Next
-              </button>
+            <div className="overflow-hidden">
+              <h2 className="text-base font-montserrat-bolder truncate">
+                {user.displayName || user.email}
+              </h2>
+              <p className="text-white/60 text-xs font-montserrat-medium truncate">
+                {user.email}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center mb-3">
+            <h3 className="text-xs tracking-wide font-montserrat-bolder text-[#E4DD3B] uppercase">
+              My Events
+            </h3>
+            <div className="flex-grow ml-3 h-px bg-white/20"></div>
+          </div>
+
+          {/* Events List */}
+          <div className="mb-3">
+            {isLoading ? (
+              <div className="flex justify-center py-4">
+                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+              </div>
+            ) : error ? (
+              <p className="text-red-500 py-2 text-xs font-montserrat-medium">
+                {error}
+              </p>
+            ) : likedEvents.length > 0 ? (
+              <div className="space-y-1.5 max-h-60 overflow-y-auto pr-1 text-xs">
+                {likedEvents.map((event) => (
+                  <div
+                    key={event.id}
+                    className="group cursor-pointer border-l-2 border-transparent hover:border-[#E4DD3B] pl-2 py-1 transition-all"
+                    onClick={() => handleEventClick(event.id)}
+                  >
+                    <div className="font-montserrat-medium text-white group-hover:text-[#E4DD3B] transition-colors">
+                      {event.name}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="py-2 text-center text-xs font-montserrat-medium text-white/60">
+                No saved events
+              </p>
             )}
           </div>
-        )}
-        <p className="text-gray-400 mt-4">{user.email}</p>
+
+          {totalPages > 1 && (
+            <div className="flex justify-center space-x-1 mt-2 text-xs border-t border-white/10 pt-3">
+              {currentPage > 0 && (
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  className="px-2 py-1 text-white/80 hover:text-[#E4DD3B] transition-colors font-montserrat-medium"
+                >
+                  ← Prev
+                </button>
+              )}
+              <div className="mx-2 text-white/40">
+                Page {currentPage + 1} of {totalPages}
+              </div>
+              {currentPage < totalPages - 1 && (
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  className="px-2 py-1 text-white/80 hover:text-[#E4DD3B] transition-colors font-montserrat-medium"
+                >
+                  Next →
+                </button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="absolute bottom-0 left-0 w-full z-50">

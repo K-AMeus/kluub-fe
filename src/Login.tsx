@@ -92,15 +92,17 @@ const Login: FC = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col justify-center items-center pb-20">
+      <div className="absolute inset-0 area z-0"></div>
+
       {/* Container for front and back rectangles */}
       <div className="relative w-full max-w-xl">
         {/* Back Rectangle */}
         <div className="absolute top-0 left-0 w-full h-full bg-[#E4DD3B] translate-x-2 translate-y-2 z-0"></div>
 
         {/* Front Rectangle */}
-        <div className="relative z-10 w-full bg-black border-2 border-white p-8">
+        <div className="relative z-10 w-full bg-black border border-white/70 p-8">
           {/* Header with Tabs */}
-          <div className="flex justify-between border-b-2 border-white pb-4">
+          <div className="flex justify-between border-b border-white/70 pb-4">
             <button
               className={`text-white font-dela-gothic-one sm:text-3xl text-2xl focus:outline-none ${
                 isLogin ? "border-b-2 border-[#E4DD3B]" : ""
@@ -137,7 +139,7 @@ const Login: FC = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email"
-                className="w-full p-3 bg-[#1B1B1B] text-white focus:outline-none focus:ring-2 focus:ring-[#E4DD3B]"
+                className="w-full p-3 bg-[#1B1B1B] text-white focus:outline-none focus:ring-2 focus:ring-[#E4DD3B] border border-white/30"
                 required
               />
             </div>
@@ -154,7 +156,7 @@ const Login: FC = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
-                className="w-full p-3 bg-[#1B1B1B] text-white focus:outline-none focus:ring-2 focus:ring-[#E4DD3B]"
+                className="w-full p-3 bg-[#1B1B1B] text-white focus:outline-none focus:ring-2 focus:ring-[#E4DD3B] border border-white/30"
                 required
               />
             </div>
@@ -173,7 +175,7 @@ const Login: FC = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Confirm Password"
-                  className="w-full p-3 bg-[#1B1B1B] text-white focus:outline-none focus:ring-2 focus:ring-[#E4DD3B]"
+                  className="w-full p-3 bg-[#1B1B1B] text-white focus:outline-none focus:ring-2 focus:ring-[#E4DD3B] border border-white/30"
                   required
                 />
               </div>
@@ -186,7 +188,7 @@ const Login: FC = () => {
                 disabled={loading}
                 className={`w-40 h-10 ${
                   loading ? "bg-gray-400" : "bg-[#E4DD3B] hover:bg-yellow-300"
-                } text-black text-lg font-montserrat-medium transition-colors duration-200 flex items-center justify-center`}
+                } text-black text-lg font-montserrat-medium transition-colors duration-200 flex items-center justify-center border border-black`}
               >
                 {loading ? "Loading..." : isLogin ? "Log In" : "Register"}
               </button>
@@ -196,7 +198,7 @@ const Login: FC = () => {
                 disabled={loading}
                 className={`w-40 h-10 ${
                   loading ? "bg-gray-200" : "bg-white hover:bg-gray-200"
-                } text-black text-lg font-montserrat-medium transition-colors duration-200 flex items-center justify-center`}
+                } text-black text-lg font-montserrat-medium transition-colors duration-200 flex items-center justify-center border border-black/30`}
               >
                 <GoogleLogoSVG />
                 <span className="ml-2">Google</span>
