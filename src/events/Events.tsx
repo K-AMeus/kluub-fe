@@ -327,7 +327,7 @@ const Events: FC = () => {
     if (scrollingDown) {
       for (let [date, el] of refs) {
         const top = el!.getBoundingClientRect().top;
-        if (top <= 100) {
+        if (top <= 80) {
           activeDate = date;
         } else {
           break;
@@ -337,7 +337,7 @@ const Events: FC = () => {
       for (let i = refs.length - 1; i >= 0; i--) {
         const [date, el] = refs[i];
         const top = el!.getBoundingClientRect().top;
-        if (top < 100) {
+        if (top < 80) {
           activeDate = date;
           break;
         }
@@ -375,11 +375,10 @@ const Events: FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen pt-8">
-      <div className="h-4"></div>
 
+      <div className="h-4"/>
       <TopPickEvents />
-
-      <div className="h-4"></div>
+      <div className="h-4"/>
 
       <div className="flex-grow py-4 sm:py-6 sm:max-w-6xl w-full sm:mx-auto px-4 sm:px-8">
         <div className="text-xl flex flex-col items-center justify-center mt-4 mb-6 text-white font-dela-gothic-one font-bold">
@@ -434,7 +433,7 @@ const Events: FC = () => {
 
       <div className="flex-grow py-0 sm:py-2 sm:max-w-7xl w-full sm:mx-auto px-4 sm:px-8 flex flex-col items-center mb-16">
         {currentStickyDate && (
-          <div className="w-full mt-10 sticky top-[80px] z-40 py-3 bg-black text-[#fff] font-dela-gothic-one uppercase font-bold text-4xl tracking-wide [text-shadow:_-1px_-1px_0_black,_1px_-1px_0_black,_-1px_1px_0_black,_1px_1px_0_black] text-left">
+          <div className="w-190 mt-10 sticky top-[57px] z-40 py-2 bg-black text-[#fff] font-dela-gothic-one uppercase font-bold text-2xl tracking-wide text-left">
             {formatDateDisplay(currentStickyDate)}
           </div>
         )}
@@ -480,7 +479,7 @@ const Events: FC = () => {
               
               // Check if a new date row should be displayed
               const showDateMarquee = eventDateStr !== previousDate.current;
-              //const showDateMarquee = true;
+
               if (showDateMarquee) {
                 previousDate.current = eventDateStr; // Update the previousDate ref
               }
@@ -488,7 +487,7 @@ const Events: FC = () => {
 
 
               return (
-                <div>
+                <div className="w-190 mx-auto">
 
                   {/* Changing non-sticky marquee */}
                   {showDateMarquee && notFirst && (
@@ -499,7 +498,7 @@ const Events: FC = () => {
                         }
                       }}
                       data-date={formattedDateTime}
-                      className="w-full z-41 mb-4 pt-0 border-white font-dela-gothic-one bg-black text-white font-dela-gothic-one uppercase font-bold text-4xl tracking-wide text-left" 
+                      className="w-full z-41 mb-2 py-0 border-white font-dela-gothic-one bg-black text-white font-dela-gothic-one uppercase font-bold text-2xl tracking-wide text-left" 
                     >
                       {formatDateDisplay(formattedDateTime)}
 
@@ -528,7 +527,7 @@ const Events: FC = () => {
                     >
                       <div className="absolute top-6 right-6 z-20 flex flex-col items-center space-y-2">
                         <div
-                          className={`flex items-center justify-center bg-black/60 border border-white/40 h-8 w-8 rounded-full ${
+                          className={`flex items-center justify-center bg-black/60 border border-white/40 h-7 w-7 rounded-full ${
                             likingEventIds.has(event.id)
                               ? "opacity-50 cursor-not-allowed"
                               : "cursor-pointer hover:border-[#E4DD3B]/80 hover:bg-black/80"
@@ -544,9 +543,9 @@ const Events: FC = () => {
                           title="Save this event"
                         >
                           <svg
-                            width="14"
-                            height="14"
-                            viewBox="0 0 24 24"
+                            width="12"
+                            height="12"
+                            viewBox="0 0 22 22"
                             fill={event.likedByUser ? "#E4DD3B" : "none"}
                             stroke="#E4DD3B"
                             strokeWidth="2"
@@ -584,13 +583,13 @@ const Events: FC = () => {
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}
-                          className="flex items-center justify-center text-white font-montserrat-medium bg-black/60 border border-white/40 hover:border-[#E4DD3B]/80 hover:bg-black/80 transition-all h-8 w-8 rounded-full"
+                          className="flex items-center justify-center text-white font-montserrat-medium bg-black/60 border border-white/40 hover:border-[#E4DD3B]/80 hover:bg-black/80 transition-all h-7 w-7 rounded-full"
                           title="View on Facebook"
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            width="14"
-                            height="14"
+                            width="12"
+                            height="12"
                             viewBox="0 0 24 24"
                             stroke="#E4DD3B"
                             strokeWidth="1"
@@ -624,12 +623,12 @@ const Events: FC = () => {
                       </div>
 
                       {/* Event Main Info */}
-                      <div className="sm:w-1/3 flex flex-col justify-start sm:pl-12 mt-3 sm:mt-4 text-left group">
-                        <h2 className="text-md sm:text-[1.35rem] font-dela-gothic-one text-white uppercase">
+                      <div className="sm:w-1/3 flex flex-col justify-start sm:pl-12 mt-3 sm:mt-1 text-left group">
+                        <h2 className="text-md sm:text-[1rem] font-dela-gothic-one text-white uppercase">
                           {event.title}
                         </h2>
                         <p
-                          className="leading-[1.25] text-[0.9rem] sm:text-[1.0rem] text-balance text-white font-montserrat mt-3"
+                          className="leading-[1.25] text-[0.6rem] sm:text-[0.7rem] text-balance text-white font-montserrat mt-3"
                           style={{ wordSpacing: "0.03em" }}
                         >
                           {truncateDescription(
@@ -645,7 +644,7 @@ const Events: FC = () => {
                               : 250
                           )}
                         </p>
-                        <p className="text-xs hidden sm:block sm:text-sm text-[#E4DD3B] font-montserrat-medium mt-2 transition-colors">
+                        <p className="text-xs hidden sm:block sm:text-xs text-[#E4DD3B] font-montserrat-medium mt-2 transition-colors">
                           Read More →
                         </p>
                       </div>
@@ -671,7 +670,7 @@ const Events: FC = () => {
                               />
                               <circle cx="12" cy="10" r="3" stroke="#E4DD3B" />
                             </svg>
-                            <p className="text-[1rem] sm:text-[1.05rem] text-white font-montserrat-medium ml-2.5">
+                            <p className="text-[1rem] sm:text-[0.7rem] text-white font-montserrat-medium ml-2.5">
                               {event.venue}
                             </p>
                           </div>
@@ -679,7 +678,7 @@ const Events: FC = () => {
                           {/* Times */}
                           <div className="flex items-center mt-3 sm:mt-4">
                             <CalendarIcon className="h-5 w-5 text-[#E4DD3B]" />
-                            <p className="text-[1rem] sm:text-[1.05rem] text-white font-montserrat-medium ml-2.5">
+                            <p className="text-[1rem] sm:text-[0.7rem] text-white font-montserrat-medium ml-2.5">
                               {new Date(event.openTime).toLocaleTimeString([], {
                                 hour: "2-digit",
                                 minute: "2-digit",
@@ -751,7 +750,7 @@ const Events: FC = () => {
                                 />
                               </g>
                             </svg>
-                            <p className="text-[1rem] sm:text-[1.05rem] text-white font-montserrat-medium ml-2.5">
+                            <p className="text-[1rem] sm:text-[0.7rem] text-white font-montserrat-medium ml-2.5">
                               {event.ticket > 0 ? `€${event.ticket}` : "FREE"}
                             </p>
                           </div>
@@ -773,7 +772,7 @@ const Events: FC = () => {
                               <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
                               <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                             </svg>
-                            <p className="text-[1rem] sm:text-[1.05rem] text-white font-montserrat-medium ml-2.5">
+                            <p className="text-[1rem] sm:text-[0.7rem] text-white font-montserrat-medium ml-2.5">
                               {event.likeCount}
                             </p>
                           </div>

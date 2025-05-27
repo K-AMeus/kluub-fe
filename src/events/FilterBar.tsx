@@ -238,7 +238,7 @@ const FilterBar: FC<FilterBarProps> = ({
     <div className="mx-auto my-2 bg-black border border-white/70 shadow-md overflow-hidden">
       <div className="p-3 flex items-end justify-between">
         {/* Filters Container */}
-        <div className="flex items-end space-x-4">
+        <div className="flex items-end space-x-4 w-180">
           {/* Search Filter */}
           <div className="w-[170px] lg:w-[200px]">
             <div className="relative">
@@ -304,7 +304,7 @@ const FilterBar: FC<FilterBarProps> = ({
           <div
             className="w-[170px] lg:w-[200px] relative"
             ref={datePickerRef}
-            style={{ zIndex: 100 }}
+            style={{ zIndex: 30 }}
           >
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
