@@ -363,7 +363,7 @@ const Events: FC = () => {
 }, [events]);
   
 
-  const formatDateDisplay = (dateStr) => {
+  const formatDateDisplay = (dateStr: string): string => {
     if (!dateStr) return '';
     const date = new Date(dateStr);
     return date.toLocaleDateString('en-US', {
