@@ -487,7 +487,7 @@ const Events: FC = () => {
 
 
               return (
-                <div className="w-190 mx-auto">
+                <div className="w-190 mx-auto" key={event.id}>
 
                   {/* Changing non-sticky marquee */}
                   {showDateMarquee && notFirst && (
