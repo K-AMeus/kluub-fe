@@ -40,13 +40,13 @@ const NavigationLinks: FC<NavigationLinksProps> = ({
           {/* Back Rectangle */}
           <div
             className="absolute w-full h-full bg-[#E4DD3B] z-0
-                       translate-x-1.5 translate-y-1.5 transition-transform duration-200
+                       translate-x-1 translate-y-1 transition-transform duration-200
                        group-hover:-translate-x-0 group-hover:-translate-y-0"
           ></div>
           {/* Front Rectangle */}
           <Link
             to={item.href}
-            className="relative z-10 inline-block w-40 h-10 px-4 py-1 text-xl bg-black text-white border-2 border-white/70 font-montserrat-medium uppercase text-center transition-colors duration-200 pt-1.5 leading-tight tracking-wide hover:bg-black"
+            className="relative z-10 inline-block w-28 h-8 px-1 py-1 text-sm bg-black text-white border-1 border-white/70 font-montserrat-medium uppercase text-center transition-colors duration-200 pt-1.5 leading-tight tracking-wide hover:bg-black"
             onClick={() => {
               window.scrollTo(0, 0);
               if (onLinkClick) onLinkClick();
@@ -282,13 +282,13 @@ const Header: FC = () => {
 
   return (
     <header className="bg-black bg-opacity-100 fixed top-0 -left-1 -right-1 z-50 font-montserrat-medium border-b-2 border-white/70">
-      <nav className="px-8 lg:px-20 flex items-center justify-between h-20 relative z-10">
+      <nav className="px-8 lg:px-20 flex items-center justify-between h-14 relative z-10">
         {/* Left Section: Logo */}
         <div className="flex items-center">
           <Link
             to="/"
-            className="text-white font-dela-gothic-one text-4xl md:text-5xl relative
-                       after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-1
+            className="text-white font-dela-gothic-one text-4xl md:text-3xl relative
+                       after:absolute after:left-0 after:-bottom-0 after:w-0 after:h-0.5
                        after:bg-[#E4DD3B] after:transition-all after:duration-300
                        hover:after:w-full"
             onClick={() => window.scrollTo(0, 0)}

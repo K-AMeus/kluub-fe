@@ -304,13 +304,81 @@ const Events: FC = () => {
     }
   };
 
+  const [currentStickyDate, setCurrentStickyDate] = useState<string>('');
+  const dateRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const previousDate = useRef<string>('');
+
+  useEffect(() => {
+  let lastScrollY = window.scrollY;
+
+  const handleScroll = () => {
+    const scrollY = window.scrollY;
+    const scrollingDown = scrollY > lastScrollY;
+    lastScrollY = scrollY;
+
+    const refs = Object.entries(dateRefs.current)
+      .filter(([, el]) => el !== null)
+      .sort(([, aEl], [, bEl]) =>
+        aEl!.getBoundingClientRect().top - bEl!.getBoundingClientRect().top
+      );
+
+    let activeDate: string | null = null;
+
+    if (scrollingDown) {
+      for (let [date, el] of refs) {
+        const top = el!.getBoundingClientRect().top;
+        if (top <= 80) {
+          activeDate = date;
+        } else {
+          break;
+        }
+      }
+    } else {
+      for (let i = refs.length - 1; i >= 0; i--) {
+        const [date, el] = refs[i];
+        const top = el!.getBoundingClientRect().top;
+        if (top < 80) {
+          activeDate = date;
+          break;
+        }
+      }
+    }
+
+    // Fallback to first available date bar if nothing matched
+    if (!activeDate && refs.length > 0) {
+      activeDate = refs[0][0]; // refs[0] is [date, element]
+    }
+
+    if (activeDate && activeDate !== currentStickyDate) {
+      setCurrentStickyDate(activeDate);
+    }
+  };
+
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  handleScroll(); // Initialize once on mount
+
+  return () => {
+    window.removeEventListener('scroll', handleScroll);
+  };
+}, [events]);
+  
+
+  const formatDateDisplay = (dateStr) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', {
+      weekday: 'short',  // Sun
+      month: 'short',    // May
+      day: 'numeric'     // 5
+    });
+  };
+
   return (
     <div className="flex flex-col min-h-screen pt-8">
-      <div className="h-4"></div>
 
+      <div className="h-4"/>
       <TopPickEvents />
-
-      <div className="h-4"></div>
+      <div className="h-4"/>
 
       <div className="flex-grow py-4 sm:py-6 sm:max-w-6xl w-full sm:mx-auto px-4 sm:px-8">
         <div className="text-xl flex flex-col items-center justify-center mt-4 mb-6 text-white font-dela-gothic-one font-bold">
@@ -364,6 +432,11 @@ const Events: FC = () => {
       </div>
 
       <div className="flex-grow py-0 sm:py-2 sm:max-w-7xl w-full sm:mx-auto px-4 sm:px-8 flex flex-col items-center mb-16">
+        {currentStickyDate && (
+          <div className="w-190 mt-10 sticky top-[57px] z-40 py-2 bg-black text-[#fff] font-dela-gothic-one uppercase font-bold text-2xl tracking-wide text-left">
+            {formatDateDisplay(currentStickyDate)}
+          </div>
+        )}
         {error && (
           <p className="text-red-500 text-center font-montserrat-bolder">
             {error}
@@ -397,271 +470,318 @@ const Events: FC = () => {
               </div>
             </div>
           ) : (
-            events.map((event) => {
+            events.map((event, index) => {
               const transformedUrl = getCloudinaryUrl(event.imageUrl, 320, 260);
 
+              const notFirst = index !== 0;
+              const eventDate = new Date(event.openTime);
+              const eventDateStr = eventDate.toDateString(); // Get the event date in string format
+              
+              // Check if a new date row should be displayed
+              const showDateMarquee = eventDateStr !== previousDate.current;
+
+              if (showDateMarquee) {
+                previousDate.current = eventDateStr; // Update the previousDate ref
+              }
+              const formattedDateTime = eventDate.toISOString().split('T')[0];
+
+
               return (
-                <div key={event.id} className="relative group mb-10 w-full">
-                  <div className="absolute w-full h-full translate-x-2 translate-y-2 bg-[#E4DD3B] z-0 transition-transform duration-200 group-hover:-translate-x-0 group-hover:-translate-y-0"></div>
-                  <div
-                    className="relative z-10 bg-black text-white border border-white/70 p-5 font-montserrat-medium flex flex-col sm:flex-row cursor-pointer mb-10 w-full"
-                    onClick={() => handleEventClick(event.id)}
-                  >
-                    <div className="absolute top-6 right-6 z-20 flex flex-col items-center space-y-2">
-                      <div
-                        className={`flex items-center justify-center bg-black/60 border border-white/40 h-8 w-8 rounded-full ${
-                          likingEventIds.has(event.id)
-                            ? "opacity-50 cursor-not-allowed"
-                            : "cursor-pointer hover:border-[#E4DD3B]/80 hover:bg-black/80"
-                        } ${
-                          event.likedByUser
-                            ? "bg-[#E4DD3B]/10 border-[#E4DD3B]/70"
-                            : ""
-                        }`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleLike(event.id, event.likedByUser);
-                        }}
-                        title="Save this event"
-                      >
-                        <svg
-                          width="14"
-                          height="14"
-                          viewBox="0 0 24 24"
-                          fill={event.likedByUser ? "#E4DD3B" : "none"}
-                          stroke="#E4DD3B"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
+                <div className="w-190 mx-auto" key={event.id}>
+
+                  {/* Changing non-sticky marquee */}
+                  {showDateMarquee && notFirst && (
+                    <div
+                      ref={(el: HTMLDivElement | null) => {
+                        if (el) {
+                          dateRefs.current[formattedDateTime] = el;
+                        }
+                      }}
+                      data-date={formattedDateTime}
+                      className="w-full z-41 mb-2 py-0 border-white font-dela-gothic-one bg-black text-white font-dela-gothic-one uppercase font-bold text-2xl tracking-wide text-left" 
+                    >
+                      {formatDateDisplay(formattedDateTime)}
+
+                    </div>
+                  )}
+
+                 {showDateMarquee && !notFirst && (
+                    <div
+                      ref={(el: HTMLDivElement | null) => {
+                        if (el) {
+                          dateRefs.current[formattedDateTime] = el;
+                        }
+                      }}
+                      data-date={formattedDateTime}
+                      className="absolute -top-full h-0 overflow-hidden"
+                    >
+                      {formatDateDisplay(formattedDateTime)}
+                    </div>
+                  )}
+
+                  <div key={event.id} className="relative group mb-10 w-full">
+                    <div className="absolute w-full h-full translate-x-2 translate-y-2 bg-[#E4DD3B] z-0 transition-transform duration-200 group-hover:-translate-x-0 group-hover:-translate-y-0"></div>
+                    <div
+                      className="relative z-10 bg-black text-white border border-white/70 p-5 font-montserrat-medium flex flex-col sm:flex-row cursor-pointer mb-10 w-full"
+                      onClick={() => handleEventClick(event.id)}
+                    >
+                      <div className="absolute top-6 right-6 z-20 flex flex-col items-center space-y-2">
+                        <div
+                          className={`flex items-center justify-center bg-black/60 border border-white/40 h-7 w-7 rounded-full ${
+                            likingEventIds.has(event.id)
+                              ? "opacity-50 cursor-not-allowed"
+                              : "cursor-pointer hover:border-[#E4DD3B]/80 hover:bg-black/80"
+                          } ${
+                            event.likedByUser
+                              ? "bg-[#E4DD3B]/10 border-[#E4DD3B]/70"
+                              : ""
+                          }`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleLike(event.id, event.likedByUser);
+                          }}
+                          title="Save this event"
                         >
-                          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
-                        </svg>
-                        {likingEventIds.has(event.id) && (
                           <svg
-                            className="animate-spin h-3.5 w-3.5 text-white absolute"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
+                            width="12"
+                            height="12"
+                            viewBox="0 0 22 22"
+                            fill={event.likedByUser ? "#E4DD3B" : "none"}
+                            stroke="#E4DD3B"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                           >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            ></circle>
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8v8H4z"
-                            ></path>
+                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
                           </svg>
-                        )}
+                          {likingEventIds.has(event.id) && (
+                            <svg
+                              className="animate-spin h-3.5 w-3.5 text-white absolute"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              ></circle>
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8v8H4z"
+                              ></path>
+                            </svg>
+                          )}
+                        </div>
+
+                        <a
+                          href={event.fbLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="flex items-center justify-center text-white font-montserrat-medium bg-black/60 border border-white/40 hover:border-[#E4DD3B]/80 hover:bg-black/80 transition-all h-7 w-7 rounded-full"
+                          title="View on Facebook"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="12"
+                            height="12"
+                            viewBox="0 0 24 24"
+                            stroke="#E4DD3B"
+                            strokeWidth="1"
+                            fill="none"
+                          >
+                            <rect
+                              x="0.5"
+                              y="0.5"
+                              width="23"
+                              height="23"
+                              rx="1"
+                              stroke="#E4DD3B"
+                              fill="none"
+                            />
+                            <path
+                              d="M16.5 12H13.5V9.5C13.5 8.5 14 8.25 14.5 8.25H16V5.5H13.5C11.5 5.5 10 7 10 9.5V12H8V15H10V23H13.5V15H15.75L16.5 12Z"
+                              fill="#E4DD3B"
+                            />
+                          </svg>
+                        </a>
                       </div>
 
-                      <a
-                        href={event.fbLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className="flex items-center justify-center text-white font-montserrat-medium bg-black/60 border border-white/40 hover:border-[#E4DD3B]/80 hover:bg-black/80 transition-all h-8 w-8 rounded-full"
-                        title="View on Facebook"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="14"
-                          height="14"
-                          viewBox="0 0 24 24"
-                          stroke="#E4DD3B"
-                          strokeWidth="1"
-                          fill="none"
+                      {/* Event Image */}
+                      <div className="relative sm:w-1/3 mb-4 sm:mb-0 sm:-ml-2">
+                        <LazyLoadImage
+                          src={transformedUrl}
+                          alt={event.title}
+                          effect="blur"
+                          className="w-full h-48 sm:h-full object-cover border-2 border-[#E4DD3B]"
+                        />
+                      </div>
+
+                      {/* Event Main Info */}
+                      <div className="sm:w-1/3 flex flex-col justify-start sm:pl-12 mt-3 sm:mt-1 text-left group">
+                        <h2 className="text-md sm:text-[1rem] font-dela-gothic-one text-white uppercase">
+                          {event.title}
+                        </h2>
+                        <p
+                          className="leading-[1.25] text-[0.6rem] sm:text-[0.7rem] text-balance text-white font-montserrat mt-3"
+                          style={{ wordSpacing: "0.03em" }}
                         >
-                          <rect
-                            x="0.5"
-                            y="0.5"
-                            width="23"
-                            height="23"
-                            rx="1"
-                            stroke="#E4DD3B"
-                            fill="none"
-                          />
-                          <path
-                            d="M16.5 12H13.5V9.5C13.5 8.5 14 8.25 14.5 8.25H16V5.5H13.5C11.5 5.5 10 7 10 9.5V12H8V15H10V23H13.5V15H15.75L16.5 12Z"
-                            fill="#E4DD3B"
-                          />
-                        </svg>
-                      </a>
-                    </div>
+                          {truncateDescription(
+                            event.description,
+                            window.innerWidth < 640
+                              ? 0
+                              : window.innerWidth < 768
+                              ? 0
+                              : window.innerWidth < 1024
+                              ? 100
+                              : window.innerWidth < 1280
+                              ? 150
+                              : 250
+                          )}
+                        </p>
+                        <p className="text-xs hidden sm:block sm:text-xs text-[#E4DD3B] font-montserrat-medium mt-2 transition-colors">
+                          Read More →
+                        </p>
+                      </div>
 
-                    {/* Event Image */}
-                    <div className="relative sm:w-1/3 mb-4 sm:mb-0 sm:-ml-2">
-                      <LazyLoadImage
-                        src={transformedUrl}
-                        alt={event.title}
-                        effect="blur"
-                        className="w-full h-48 sm:h-full object-cover border-2 border-[#E4DD3B]"
-                      />
-                    </div>
+                      {/* Event Side Info */}
+                      <div className="sm:w-1/3 flex flex-col justify-between items-start pl-0 sm:pl-12 mt-4 sm:mt-0">
+                        <div className="w-full mb-4">
+                          {/* Location */}
+                          <div className="flex items-center mt-2 sm:mt-4">
+                            <svg
+                              width="20"
+                              height="20"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path
+                                d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"
+                                stroke="#E4DD3B"
+                              />
+                              <circle cx="12" cy="10" r="3" stroke="#E4DD3B" />
+                            </svg>
+                            <p className="text-[1rem] sm:text-[0.7rem] text-white font-montserrat-medium ml-2.5">
+                              {event.venue}
+                            </p>
+                          </div>
 
-                    {/* Event Main Info */}
-                    <div className="sm:w-1/3 flex flex-col justify-start sm:pl-12 mt-3 sm:mt-4 text-left group">
-                      <h2 className="text-md sm:text-[1.35rem] font-dela-gothic-one text-white uppercase">
-                        {event.title}
-                      </h2>
-                      <p
-                        className="leading-[1.25] text-[0.9rem] sm:text-[1.0rem] text-balance text-white font-montserrat mt-3"
-                        style={{ wordSpacing: "0.03em" }}
-                      >
-                        {truncateDescription(
-                          event.description,
-                          window.innerWidth < 640
-                            ? 0
-                            : window.innerWidth < 768
-                            ? 0
-                            : window.innerWidth < 1024
-                            ? 100
-                            : window.innerWidth < 1280
-                            ? 150
-                            : 250
-                        )}
-                      </p>
-                      <p className="text-xs hidden sm:block sm:text-sm text-[#E4DD3B] font-montserrat-medium mt-2 transition-colors">
-                        Read More →
-                      </p>
-                    </div>
+                          {/* Times */}
+                          <div className="flex items-center mt-3 sm:mt-4">
+                            <CalendarIcon className="h-5 w-5 text-[#E4DD3B]" />
+                            <p className="text-[1rem] sm:text-[0.7rem] text-white font-montserrat-medium ml-2.5">
+                              {new Date(event.openTime).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: false,
+                              })}{" "}
+                              -{" "}
+                              {new Date(event.closeTime).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: false,
+                              })}
+                            </p>
+                          </div>
 
-                    {/* Event Side Info */}
-                    <div className="sm:w-1/3 flex flex-col justify-between items-start pl-0 sm:pl-12 mt-4 sm:mt-0">
-                      <div className="w-full mb-4">
-                        {/* Location */}
-                        <div className="flex items-center mt-2 sm:mt-4">
-                          <svg
-                            width="20"
-                            height="20"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path
-                              d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"
+                          {/* Ticket Price */}
+                          <div className="flex items-center mt-3 sm:mt-4">
+                            <svg
+                              width="22"
+                              height="22"
+                              viewBox="0 0 512 512"
+                              fill="none"
                               stroke="#E4DD3B"
-                            />
-                            <circle cx="12" cy="10" r="3" stroke="#E4DD3B" />
-                          </svg>
-                          <p className="text-[1rem] sm:text-[1.05rem] text-white font-montserrat-medium ml-2.5">
-                            {event.venue}
-                          </p>
-                        </div>
+                              strokeWidth="0"
+                              className="text-[#E4DD3B]"
+                            >
+                              <g fill="#E4DD3B" stroke="#E4DD3B" strokeWidth="10">
+                                <path
+                                  d="M430.337,231.065H81.674c-29.701,0-53.858,24.16-53.858,53.862v49.884v15.976l15.806,2.262
+                                  c9.135,1.31,16.03,9.258,16.03,18.483c0,9.225-6.891,17.173-16.022,18.482l-15.814,2.262v15.978v49.892
+                                  c0,29.693,24.157,53.854,53.858,53.854h348.663c29.701,0,53.862-24.161,53.862-53.854v-49.558V391l-17.571-0.822
+                                  c-9.982-0.463-17.808-8.655-17.808-18.645c0-9.982,7.826-18.174,17.815-18.646l17.564-0.83v-17.58v-49.55
+                                  C484.199,255.225,460.038,231.065,430.337,231.065z M465.765,334.477c-19.686,0.936-35.371,17.14-35.371,37.056
+                                  c0,19.923,15.685,36.135,35.371,37.055v49.558c0,19.565-15.864,35.428-35.428,35.428H81.674c-19.569,0-35.432-15.863-35.432-35.428
+                                  v-49.892c17.991-2.579,31.836-18.011,31.836-36.722c0-18.703-13.846-34.135-31.836-36.721v-49.884
+                                  c0-19.573,15.863-35.436,35.432-35.436h348.663c19.564,0,35.428,15.863,35.428,35.436V334.477z"
+                                />
+                                <rect
+                                  x="133.621"
+                                  y="439.419"
+                                  width="12.19"
+                                  height="31.8"
+                                />
+                                <rect
+                                  x="133.621"
+                                  y="383.564"
+                                  width="12.19"
+                                  height="31.792"
+                                />
+                                <rect
+                                  x="133.621"
+                                  y="327.7"
+                                  width="12.19"
+                                  height="31.8"
+                                />
+                                <rect
+                                  x="133.621"
+                                  y="271.846"
+                                  width="12.19"
+                                  height="31.799"
+                                />
+                                <polygon points="111.245,180.758 100.592,186.68 116.053,214.461 126.702,208.539" />
+                                <path
+                                  d="M497.524,179.025l-24.095-43.311l-8.558-15.36l-15.749,7.826c-8.948,4.442-19.768,1.09-24.617-7.639
+                                  c-4.865-8.721-2.001-19.687,6.492-24.95l14.952-9.266l-8.558-15.368l-24.088-43.294C398.863,1.714,366.006-7.658,340.047,6.79
+                                  L35.374,176.299c-25.955,14.44-35.318,47.305-20.878,73.256l0.875,1.578c3.27-6.394,7.43-12.243,12.324-17.409
+                                  c-4.803-15.643,1.762-33.044,16.636-41.326l304.681-169.51c17.1-9.518,38.674-3.368,48.192,13.732l24.088,43.302
+                                  c-16.751,10.38-22.575,32.182-12.895,49.582c9.681,17.401,31.271,23.942,48.925,15.172l24.095,43.312
+                                  c7.273,13.056,5.337,28.692-3.571,39.601c4.776,3.961,8.989,8.558,12.65,13.569C505.4,224.524,508.979,199.615,497.524,179.025z"
+                                />
+                              </g>
+                            </svg>
+                            <p className="text-[1rem] sm:text-[0.7rem] text-white font-montserrat-medium ml-2.5">
+                              {event.ticket > 0 ? `€${event.ticket}` : "FREE"}
+                            </p>
+                          </div>
 
-                        {/* Times */}
-                        <div className="flex items-center mt-3 sm:mt-4">
-                          <CalendarIcon className="h-5 w-5 text-[#E4DD3B]" />
-                          <p className="text-[1rem] sm:text-[1.05rem] text-white font-montserrat-medium ml-2.5">
-                            {new Date(event.openTime).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              hour12: false,
-                            })}{" "}
-                            -{" "}
-                            {new Date(event.closeTime).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              hour12: false,
-                            })}
-                          </p>
-                        </div>
-
-                        {/* Ticket Price */}
-                        <div className="flex items-center mt-3 sm:mt-4">
-                          <svg
-                            width="22"
-                            height="22"
-                            viewBox="0 0 512 512"
-                            fill="none"
-                            stroke="#E4DD3B"
-                            strokeWidth="0"
-                            className="text-[#E4DD3B]"
-                          >
-                            <g fill="#E4DD3B" stroke="#E4DD3B" strokeWidth="10">
-                              <path
-                                d="M430.337,231.065H81.674c-29.701,0-53.858,24.16-53.858,53.862v49.884v15.976l15.806,2.262
-                                c9.135,1.31,16.03,9.258,16.03,18.483c0,9.225-6.891,17.173-16.022,18.482l-15.814,2.262v15.978v49.892
-                                c0,29.693,24.157,53.854,53.858,53.854h348.663c29.701,0,53.862-24.161,53.862-53.854v-49.558V391l-17.571-0.822
-                                c-9.982-0.463-17.808-8.655-17.808-18.645c0-9.982,7.826-18.174,17.815-18.646l17.564-0.83v-17.58v-49.55
-                                C484.199,255.225,460.038,231.065,430.337,231.065z M465.765,334.477c-19.686,0.936-35.371,17.14-35.371,37.056
-                                c0,19.923,15.685,36.135,35.371,37.055v49.558c0,19.565-15.864,35.428-35.428,35.428H81.674c-19.569,0-35.432-15.863-35.432-35.428
-                                v-49.892c17.991-2.579,31.836-18.011,31.836-36.722c0-18.703-13.846-34.135-31.836-36.721v-49.884
-                                c0-19.573,15.863-35.436,35.432-35.436h348.663c19.564,0,35.428,15.863,35.428,35.436V334.477z"
-                              />
-                              <rect
-                                x="133.621"
-                                y="439.419"
-                                width="12.19"
-                                height="31.8"
-                              />
-                              <rect
-                                x="133.621"
-                                y="383.564"
-                                width="12.19"
-                                height="31.792"
-                              />
-                              <rect
-                                x="133.621"
-                                y="327.7"
-                                width="12.19"
-                                height="31.8"
-                              />
-                              <rect
-                                x="133.621"
-                                y="271.846"
-                                width="12.19"
-                                height="31.799"
-                              />
-                              <polygon points="111.245,180.758 100.592,186.68 116.053,214.461 126.702,208.539" />
-                              <path
-                                d="M497.524,179.025l-24.095-43.311l-8.558-15.36l-15.749,7.826c-8.948,4.442-19.768,1.09-24.617-7.639
-                                c-4.865-8.721-2.001-19.687,6.492-24.95l14.952-9.266l-8.558-15.368l-24.088-43.294C398.863,1.714,366.006-7.658,340.047,6.79
-                                L35.374,176.299c-25.955,14.44-35.318,47.305-20.878,73.256l0.875,1.578c3.27-6.394,7.43-12.243,12.324-17.409
-                                c-4.803-15.643,1.762-33.044,16.636-41.326l304.681-169.51c17.1-9.518,38.674-3.368,48.192,13.732l24.088,43.302
-                                c-16.751,10.38-22.575,32.182-12.895,49.582c9.681,17.401,31.271,23.942,48.925,15.172l24.095,43.312
-                                c7.273,13.056,5.337,28.692-3.571,39.601c4.776,3.961,8.989,8.558,12.65,13.569C505.4,224.524,508.979,199.615,497.524,179.025z"
-                              />
-                            </g>
-                          </svg>
-                          <p className="text-[1rem] sm:text-[1.05rem] text-white font-montserrat-medium ml-2.5">
-                            {event.ticket > 0 ? `€${event.ticket}` : "FREE"}
-                          </p>
-                        </div>
-
-                        {/* People Saved/Bookmarked */}
-                        <div className="flex items-center mt-3 sm:mt-4">
-                          <svg
-                            width="20"
-                            height="20"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="#E4DD3B"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="9" cy="7" r="4"></circle>
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                          </svg>
-                          <p className="text-[1rem] sm:text-[1.05rem] text-white font-montserrat-medium ml-2.5">
-                            {event.likeCount}
-                          </p>
+                          {/* People Saved/Bookmarked */}
+                          <div className="flex items-center mt-3 sm:mt-4">
+                            <svg
+                              width="20"
+                              height="20"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="#E4DD3B"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                              <circle cx="9" cy="7" r="4"></circle>
+                              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                            <p className="text-[1rem] sm:text-[0.7rem] text-white font-montserrat-medium ml-2.5">
+                              {event.likeCount}
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
+                
               );
             })
           )}

@@ -12,7 +12,7 @@ const LanguageSwitcher: FC = () => {
     <div className="flex space-x-2">
       <button
         onClick={switchToEstonian}
-        className={`px-4 py-2 h-10 bg-black border-2 border-white/70 font-montserrat-medium uppercase transition-colors duration-200 ${
+        className={`px-2 py-1 h-8 w-14 bg-black border-1 border-white/70 font-montserrat-medium uppercase transition-colors duration-200 ${
           currentLang === "et" ? "text-[#E4DD3B] font-bold" : "text-white"
         }`}
       >
@@ -20,7 +20,7 @@ const LanguageSwitcher: FC = () => {
       </button>
       <button
         onClick={switchToEnglish}
-        className={`px-4 py-2 h-10 bg-black border-2 border-white/70 font-montserrat-medium uppercase transition-colors duration-200 ${
+        className={`px-2 py-1 h-8 w-14 bg-black border-1 border-white/70 font-montserrat-medium uppercase transition-colors duration-200 ${
           currentLang === "en" ? "text-[#E4DD3B] font-bold" : "text-white"
         }`}
       >
