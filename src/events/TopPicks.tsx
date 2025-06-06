@@ -54,7 +54,7 @@ export const TopPickEvents: FC = () => {
   return (
     <div className="overflow-hidden">
       <Marquee
-        className="pt-2 pb-6 bg-black border-b-2 border-white/70 text-white"
+        className="pb-3 bg-black border-b-2 border-white/70 text-white"
         style={{ overflowY: "hidden" }}
         autoFill
         pauseOnHover
@@ -74,11 +74,11 @@ export const TopPickEvents: FC = () => {
             >
               <div className="absolute w-full h-full translate-x-0 translate-y-0 bg-[#E4DD3B] z-0 transition-transform duration-150 group-hover:translate-x-2 group-hover:translate-y-2"></div>
               <div
-                className="relative inline-flex flex-col justify-between items-start z-10 p-3 border border-white/70 bg-black text-white"
-                style={{ width: "16rem", height: "4.75rem" }}
-              >
+                  className="relative inline-flex flex-col justify-between items-start z-10 p-3 border border-white/70 bg-black text-white
+                            w-56 h-16 2xl:w-84 2xl:h-24"
+                >
                 {/* Title row */}
-                <div className="text-sm font-montserrat-bolder uppercase w-full truncate">
+                <div className="text-xs 2xl:text-lg font-montserrat-bolder uppercase w-full truncate">
                   {event.title}
                 </div>
 
@@ -102,7 +102,7 @@ export const TopPickEvents: FC = () => {
                       />
                       <circle cx="12" cy="10" r="3" stroke="#E4DD3B" />
                     </svg>
-                    <p className="text-xs text-white/90 font-montserrat-medium ml-1.5 truncate max-w-[120px]">
+                    <p className="text-[0.7rem] 2xl:text-[1.0rem] text-white/90 font-montserrat-medium ml-1.5 truncate max-w-[6rem] 2xl:max-w-[12rem] ">
                       {event.venue}
                     </p>
                   </div>
@@ -121,7 +121,7 @@ export const TopPickEvents: FC = () => {
                         fill="#E4DD3B"
                       />
                     </svg>
-                    <div className="ml-1.5 text-xs text-white/90">
+                    <div className="ml-1.5 text-[0.7rem] 2xl:text-[1.0rem] text-white/90">
                       {formatDate(event.openTime)}
                     </div>
                   </div>

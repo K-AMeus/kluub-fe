@@ -46,7 +46,7 @@ const NavigationLinks: FC<NavigationLinksProps> = ({
           {/* Front Rectangle */}
           <Link
             to={item.href}
-            className="relative z-10 inline-block w-28 h-8 px-1 py-1 text-sm bg-black text-white border-1 border-white/70 font-montserrat-medium uppercase text-center transition-colors duration-200 pt-1.5 leading-tight tracking-wide hover:bg-black"
+            className="relative z-10 inline-block w-28 md:w-24 2xl:w-28 h-8 md:h-7 2xl:h-8 px-1 py-1 text-sm md:text-xs 2xl:text-sm bg-black text-white border-1 border-white/70 font-montserrat-medium uppercase text-center transition-colors duration-200 pt-1.5 leading-tight tracking-wide hover:bg-black"
             onClick={() => {
               window.scrollTo(0, 0);
               if (onLinkClick) onLinkClick();
@@ -282,12 +282,12 @@ const Header: FC = () => {
 
   return (
     <header className="bg-black bg-opacity-100 fixed top-0 -left-1 -right-1 z-50 font-montserrat-medium border-b-2 border-white/70">
-      <nav className="px-8 lg:px-20 flex items-center justify-between h-14 relative z-10">
+      <nav className="px-8 lg:px-10 2xl:px-20 flex items-center justify-between h-12 2xl:h-14 relative z-10">
         {/* Left Section: Logo */}
-        <div className="flex items-center">
+        <div className="flex items-center md:pr-2">
           <Link
             to="/"
-            className="text-white font-dela-gothic-one text-4xl md:text-3xl relative
+            className="text-white font-dela-gothic-one text-[1.6rem] 2xl:text-3xl relative
                        after:absolute after:left-0 after:-bottom-0 after:w-0 after:h-0.5
                        after:bg-[#E4DD3B] after:transition-all after:duration-300
                        hover:after:w-full"
@@ -360,7 +360,7 @@ const Header: FC = () => {
               </button>
             </div>
 
-            <div className="mt-6 px-5 space-y-6 flex flex-col items-center">
+            <div className="mt-6 px-3 space-y-6 flex flex-col items-center">
               <NavigationLinksVertical
                 user={user}
                 isAdmin={isAdmin}

@@ -6,10 +6,10 @@ import { useTranslation } from "react-i18next";
 const Footer: FC = () => {
   const { t } = useTranslation();
   return (
-    <footer className="w-full bg-black border-t-[6px] border-[#E4DD3B] text-white font-montserrat-small text-[1.1rem]">
-      <div className="w-full px-8 pt-4 pb-4 flex justify-between items-center">
+    <footer className="w-full bg-black border-t-[6px] border-[#E4DD3B] text-white font-montserrat-small">
+      <div className="w-full px-8 p-2 2xl:p-4 flex justify-between items-center">
         {/* Left Section: Email, Contact, and Sign In */}
-        <div className="flex items-center space-x-6 flex-nowrap">
+        <div className="flex items-center space-x-6 flex-nowrap text-base">
           <a
             href="mailto:info@kluub.ee"
             className="hover:underline whitespace-nowrap"
@@ -40,25 +40,25 @@ const Footer: FC = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <FaInstagram className="h-6 w-6 md:h-8 md:w-8 hover:text-[#E4DD3B]" />
+              <FaInstagram className="h-6 w-6 md:h-7 md:w-7 2xl:h-8 2xl:w-8 hover:text-[#E4DD3B]" />
             </a>
             <a
               href="https://facebook.com"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <FaFacebookF className="h-6 w-6 md:h-8 md:w-8 hover:text-[#E4DD3B]" />
+              <FaFacebookF className="h-6 w-6 md:h-7 md:w-7 2xl:h-8 2xl:w-8 hover:text-[#E4DD3B]" />
             </a>
             <a
               href="https://tiktok.com"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <FaTiktok className="h-6 w-6 md:h-8 md:w-8 hover:text-[#E4DD3B]" />
+              <FaTiktok className="h-6 w-6 md:h-7 md:w-7 2xl:h-8 2xl:w-8 hover:text-[#E4DD3B]" />
             </a>
           </div>
 
-          <div className=" flex-row items-end ml-6 justify-center text-md hidden md:flex">
+          <div className=" flex-row items-end ml-6 justify-center text-base hidden md:flex">
             <div >@Kluub 2025</div>
             <Link
               to="/privacy"
