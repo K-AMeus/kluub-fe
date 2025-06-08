@@ -103,10 +103,6 @@ const Events: FC = () => {
     }
   }, [cityParam, user]);
 
-  useEffect(() => {
-    fetchVenues();
-  }, [fetchVenues]);
-
   const fetchEvents = async () => {
     if (fetchingRef.current || !hasMore) return;
     fetchingRef.current = true;
@@ -304,80 +300,78 @@ const Events: FC = () => {
     }
   };
 
-  const [currentStickyDate, setCurrentStickyDate] = useState<string>('');
+  const [currentStickyDate, setCurrentStickyDate] = useState<string>("");
   const dateRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
-  const previousDate = useRef<string>('');
+  const previousDate = useRef<string>("");
 
   useEffect(() => {
-  let lastScrollY = window.scrollY;
+    let lastScrollY = window.scrollY;
 
-  const handleScroll = () => {
-    const scrollY = window.scrollY;
-    const scrollingDown = scrollY > lastScrollY;
-    lastScrollY = scrollY;
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const scrollingDown = scrollY > lastScrollY;
+      lastScrollY = scrollY;
 
-    const refs = Object.entries(dateRefs.current)
-      .filter(([, el]) => el !== null)
-      .sort(([, aEl], [, bEl]) =>
-        aEl!.getBoundingClientRect().top - bEl!.getBoundingClientRect().top
-      );
+      const refs = Object.entries(dateRefs.current)
+        .filter(([, el]) => el !== null)
+        .sort(
+          ([, aEl], [, bEl]) =>
+            aEl!.getBoundingClientRect().top - bEl!.getBoundingClientRect().top
+        );
 
-    let activeDate: string | null = null;
+      let activeDate: string | null = null;
 
-    if (scrollingDown) {
-      for (let [date, el] of refs) {
-        const top = el!.getBoundingClientRect().top;
-        if (top <= 76) {
-          activeDate = date;
-        } else {
-          break;
+      if (scrollingDown) {
+        for (let [date, el] of refs) {
+          const top = el!.getBoundingClientRect().top;
+          if (top <= 76) {
+            activeDate = date;
+          } else {
+            break;
+          }
+        }
+      } else {
+        for (let i = refs.length - 1; i >= 0; i--) {
+          const [date, el] = refs[i];
+          const top = el!.getBoundingClientRect().top;
+          if (top < 76) {
+            activeDate = date;
+            break;
+          }
         }
       }
-    } else {
-      for (let i = refs.length - 1; i >= 0; i--) {
-        const [date, el] = refs[i];
-        const top = el!.getBoundingClientRect().top;
-        if (top < 76) {
-          activeDate = date;
-          break;
-        }
+
+      // Fallback to first available date bar if nothing matched
+      if (!activeDate && refs.length > 0) {
+        activeDate = refs[0][0]; // refs[0] is [date, element]
       }
-    }
 
-    // Fallback to first available date bar if nothing matched
-    if (!activeDate && refs.length > 0) {
-      activeDate = refs[0][0]; // refs[0] is [date, element]
-    }
+      if (activeDate && activeDate !== currentStickyDate) {
+        setCurrentStickyDate(activeDate);
+      }
+    };
 
-    if (activeDate && activeDate !== currentStickyDate) {
-      setCurrentStickyDate(activeDate);
-    }
-  };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll(); // Initialize once on mount
 
-  window.addEventListener('scroll', handleScroll, { passive: true });
-  handleScroll(); // Initialize once on mount
-
-  return () => {
-    window.removeEventListener('scroll', handleScroll);
-  };
-}, [events]);
-  
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [events]);
 
   const formatDateDisplay = (dateStr: string): string => {
-    if (!dateStr) return '';
+    if (!dateStr) return "";
     const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', {
-      weekday: 'short',  // Sun
-      month: 'short',    // May
-      day: 'numeric'     // 5
+    return date.toLocaleDateString("en-US", {
+      weekday: "short", // Sun
+      month: "short", // May
+      day: "numeric", // 5
     });
   };
 
   return (
     <div className="flex flex-col min-h-screen pt-3 2xl:p-5">
-
       <TopPickEvents />
-
 
       {/*CLOCK */}
       <div className="flex-grow py-4 sm:py-2 sm:max-w-6xl w-full sm:mx-auto px-4 sm:px-8">
@@ -397,7 +391,6 @@ const Events: FC = () => {
           <div className="mt-4 w-60 xs:w-100 md:w-150 lg:w-160 2xl:w-260 border-t-2 border-[#E4DD3B]"></div>
         </div>
       </div>
-
 
       {/*filter bar */}
       <div className="w-full flex justify-center">
@@ -429,6 +422,7 @@ const Events: FC = () => {
             onApplyFilters={() => fetchEventsWithFilters(true)}
             onClearFilters={clearFilters}
             onSearchKeyPress={handleSearchKeyPress}
+            fetchVenues={fetchVenues}
           />
         </div>
       </div>
@@ -448,7 +442,6 @@ const Events: FC = () => {
           </p>
         )}
 
-        
         <div className="space-y-8 w-full justify-items-center">
           {events.length === 0 && !error && !isSearchMode ? (
             <div className="flex justify-center items-center h-40">
@@ -483,21 +476,20 @@ const Events: FC = () => {
               const notFirst = index !== 0;
               const eventDate = new Date(event.openTime);
               const eventDateStr = eventDate.toDateString(); // Get the event date in string format
-              
+
               // Check if a new date row should be displayed
               const showDateMarquee = eventDateStr !== previousDate.current;
 
               if (showDateMarquee) {
                 previousDate.current = eventDateStr; // Update the previousDate ref
               }
-              const formattedDateTime = eventDate.toISOString().split('T')[0];
-
+              const formattedDateTime = eventDate.toISOString().split("T")[0];
 
               return (
-
-                
-                <div className="xs:w-100 md:w-150 lg:w-160 2xl:w-260 mx-auto" key={event.id}>
-
+                <div
+                  className="xs:w-100 md:w-150 lg:w-160 2xl:w-260 mx-auto"
+                  key={event.id}
+                >
                   {/* Changing non-sticky marquee */}
                   {showDateMarquee && notFirst && (
                     <div
@@ -507,14 +499,13 @@ const Events: FC = () => {
                         }
                       }}
                       data-date={formattedDateTime}
-                      className="w-full z-41 mb-2 border-white font-dela-gothic-one bg-black text-white font-dela-gothic-one uppercase font-bold text-xl 2xl:text-3xl tracking-wide text-left" 
+                      className="w-full z-41 mb-2 border-white font-dela-gothic-one bg-black text-white font-dela-gothic-one uppercase font-bold text-xl 2xl:text-3xl tracking-wide text-left"
                     >
                       {formatDateDisplay(formattedDateTime)}
-
                     </div>
                   )}
 
-                 {showDateMarquee && !notFirst && (
+                  {showDateMarquee && !notFirst && (
                     <div
                       ref={(el: HTMLDivElement | null) => {
                         if (el) {
@@ -529,13 +520,12 @@ const Events: FC = () => {
                   )}
 
                   <div key={event.id} className="relative group mb-10 w-full">
-                    <div className="absolute w-full h-full translate-x-2 translate-y-2 bg-[#E4DD3B] z-0 transition-transform duration-200 group-hover:-translate-x-0 group-hover:-translate-y-0"/>
+                    <div className="absolute w-full h-full translate-x-2 translate-y-2 bg-[#E4DD3B] z-0 transition-transform duration-200 group-hover:-translate-x-0 group-hover:-translate-y-0" />
 
                     <div
                       className="relative z-10 bg-black text-white border border-white/70 p-5  md:pb-2 2xl:pb-5 font-montserrat-medium flex flex-col sm:flex-row cursor-pointer mb-10 w-full"
                       onClick={() => handleEventClick(event.id)}
                     >
-
                       {/* bookmark+fb buttons */}
                       <div className="absolute top-4 right-3 2xl:top-6 2xl:right-6 z-20 flex flex-col items-center space-y-2">
                         <div
@@ -699,11 +689,14 @@ const Events: FC = () => {
                                 hour12: false,
                               })}{" "}
                               -{" "}
-                              {new Date(event.closeTime).toLocaleTimeString([], {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                hour12: false,
-                              })}
+                              {new Date(event.closeTime).toLocaleTimeString(
+                                [],
+                                {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                  hour12: false,
+                                }
+                              )}
                             </p>
                           </div>
 
@@ -718,7 +711,11 @@ const Events: FC = () => {
                               strokeWidth="0"
                               className="text-[#E4DD3B]"
                             >
-                              <g fill="#E4DD3B" stroke="#E4DD3B" strokeWidth="10">
+                              <g
+                                fill="#E4DD3B"
+                                stroke="#E4DD3B"
+                                strokeWidth="10"
+                              >
                                 <path
                                   d="M430.337,231.065H81.674c-29.701,0-53.858,24.16-53.858,53.862v49.884v15.976l15.806,2.262
                                   c9.135,1.31,16.03,9.258,16.03,18.483c0,9.225-6.891,17.173-16.022,18.482l-15.814,2.262v15.978v49.892
@@ -795,7 +792,6 @@ const Events: FC = () => {
                     </div>
                   </div>
                 </div>
-                
               );
             })
           )}

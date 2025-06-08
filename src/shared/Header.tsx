@@ -57,13 +57,13 @@ const NavigationLinks: FC<NavigationLinksProps> = ({
         </div>
       ))}
       {isAdmin && (
-        <div key="admin-panel" className="relative flex-none">
+        <div key="admin-panel" className="relative flex-none group">
           {/* Back Rectangle */}
-          <div className="absolute w-full h-full translate-x-1 translate-y-1 bg-[#E4DD3B] z-0"></div>
+          <div className="absolute w-full h-full bg-[#E4DD3B] z-0 translate-x-1 translate-y-1 transition-transform duration-200 group-hover:-translate-x-0 group-hover:-translate-y-0"></div>
           {/* Front Rectangle */}
           <Link
             to="/admin"
-            className="relative z-10 inline-block w-40 px-4 py-1 bg-black text-white border-2 border-white/70 font-montserrat-medium uppercase text-center hover:bg-gray-800 transition-colors duration-200"
+            className="relative z-10 inline-block w-28 md:w-24 2xl:w-28 h-8 md:h-7 2xl:h-8 px-1 py-1 text-sm md:text-xs 2xl:text-sm bg-black text-white border-1 border-white/70 font-montserrat-medium uppercase text-center transition-colors duration-200 pt-1.5 leading-tight tracking-wide hover:bg-black"
             onClick={() => {
               if (onLinkClick) onLinkClick();
             }}

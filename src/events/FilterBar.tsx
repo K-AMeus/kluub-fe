@@ -36,6 +36,7 @@ interface FilterBarProps {
   onApplyFilters: () => void;
   onClearFilters: () => void;
   onSearchKeyPress: (e: React.KeyboardEvent) => void;
+  fetchVenues: () => void | Promise<void>;
 }
 
 const FilterBar: FC<FilterBarProps> = ({
@@ -53,6 +54,7 @@ const FilterBar: FC<FilterBarProps> = ({
   onApplyFilters,
   onClearFilters,
   onSearchKeyPress,
+  fetchVenues,
 }) => {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const datePickerRef = useRef<HTMLDivElement>(null);
@@ -282,6 +284,7 @@ const FilterBar: FC<FilterBarProps> = ({
               <select
                 value={filterVenue}
                 onChange={(e) => setFilterVenue(e.target.value)}
+                onFocus={fetchVenues}
                 className={`bg-black/50 border-b border-white/50 p-1.5 pl-7 w-full focus:outline-none focus:border-[#E4DD3B] transition-colors cursor-pointer appearance-none pr-7 ${
                   filterVenue ? "text-white" : "text-gray-400"
                 }`}
@@ -301,7 +304,8 @@ const FilterBar: FC<FilterBarProps> = ({
           </div>
 
           {/* Date Filter */}
-          <div className="lg:w-[10rem] 2xl:w-[20rem] relative"
+          <div
+            className="lg:w-[10rem] 2xl:w-[20rem] relative"
             ref={datePickerRef}
             style={{ zIndex: 30 }}
           >
@@ -393,7 +397,7 @@ const FilterBar: FC<FilterBarProps> = ({
           <button
             onClick={onClearFilters}
             className="flex items-center justify-center px-2.5 py-1 2xl:px-3 2xl:py-1.5  bg-transparent text-white border border-white/50 hover:border-[#E4DD3B] transition-all duration-200 text-xs 2xl:text-sm"
-          > 
+          >
             <XMarkIcon className="h-3.5 w-3.5 mr-1.5 text-[#E4DD3B]" />
             <span className="font-montserrat-medium tracking-wide">Reset</span>
           </button>
