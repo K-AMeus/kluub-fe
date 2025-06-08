@@ -235,12 +235,12 @@ const FilterBar: FC<FilterBarProps> = ({
   };
 
   return (
-    <div className="mx-auto my-2 bg-black border border-white/70 shadow-md overflow-hidden">
+    <div className="mx-auto my-2 bg-black border border-white/70 shadow-md overflow-hidden xs:w-100 md:w-150 lg:w-160 2xl:w-260">
       <div className="p-3 flex items-end justify-between">
         {/* Filters Container */}
-        <div className="flex items-end space-x-4 w-180">
+        <div className="flex items-end space-x-4 md:w-[28.5rem] 2xl:w-[40rem] text-xs 2xl:text-lg">
           {/* Search Filter */}
-          <div className="w-[170px] lg:w-[200px]">
+          <div className="w-30.5 lg:w-[8rem] 2xl:w-[20rem]">
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
                 <MagnifyingGlassIcon className="h-3.5 w-3.5 text-[#E4DD3B]" />
@@ -250,15 +250,15 @@ const FilterBar: FC<FilterBarProps> = ({
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 onKeyDown={onSearchKeyPress}
-                className="block w-full pl-7 py-1.5 border-b border-white/50 bg-black text-white placeholder-gray-400 focus:outline-none focus:border-[#E4DD3B] transition-colors text-sm"
-                placeholder="Search for events..."
+                className="block w-full pl-7 py-1.5 border-b border-white/50 bg-black text-white placeholder-gray-400 focus:outline-none focus:border-[#E4DD3B] transition-colors"
+                placeholder="Search..."
                 aria-label="Search events"
               />
             </div>
           </div>
 
           {/* Venue Filter */}
-          <div className="w-[170px] lg:w-[200px]" style={{ zIndex: 30 }}>
+          <div className="lg:w-[9rem] 2xl:w-[20rem]" style={{ zIndex: 30 }}>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
                 <svg
@@ -282,12 +282,12 @@ const FilterBar: FC<FilterBarProps> = ({
               <select
                 value={filterVenue}
                 onChange={(e) => setFilterVenue(e.target.value)}
-                className={`bg-black/50 border-b border-white/50 p-1.5 pl-7 w-full focus:outline-none focus:border-[#E4DD3B] transition-colors cursor-pointer appearance-none pr-7 text-sm ${
+                className={`bg-black/50 border-b border-white/50 p-1.5 pl-7 w-full focus:outline-none focus:border-[#E4DD3B] transition-colors cursor-pointer appearance-none pr-7 ${
                   filterVenue ? "text-white" : "text-gray-400"
                 }`}
                 aria-label="Filter by venue"
               >
-                <option value="">All Venues</option>
+                <option value="">Venues</option>
                 {venues.map((venue) => (
                   <option key={venue} value={venue}>
                     {venue}
@@ -301,8 +301,7 @@ const FilterBar: FC<FilterBarProps> = ({
           </div>
 
           {/* Date Filter */}
-          <div
-            className="w-[170px] lg:w-[200px] relative"
+          <div className="lg:w-[10rem] 2xl:w-[20rem] relative"
             ref={datePickerRef}
             style={{ zIndex: 30 }}
           >
@@ -315,7 +314,7 @@ const FilterBar: FC<FilterBarProps> = ({
                 className="bg-black/50 border-b border-white/50 text-white p-1.5 pl-7 w-full cursor-pointer flex justify-between items-center"
               >
                 <span
-                  className={`text-sm truncate mr-2 ${
+                  className={`truncate mr-2 ${
                     filterDate ? "text-white" : "text-gray-400"
                   }`}
                 >
@@ -329,7 +328,7 @@ const FilterBar: FC<FilterBarProps> = ({
                 <div
                   className="fixed w-[220px] bg-black border border-white/50 shadow-lg mt-1 p-2"
                   style={{
-                    zIndex: 9999,
+                    zIndex: 39,
                     top: datePickerRef.current
                       ? datePickerRef.current.getBoundingClientRect().bottom +
                         window.scrollY
@@ -358,7 +357,8 @@ const FilterBar: FC<FilterBarProps> = ({
             </div>
           </div>
 
-          <div className="w-[170px] lg:w-[200px]" style={{ zIndex: 20 }}>
+          {/* Sorting */}
+          <div className="lg:w-[8rem] 2xl:w-[20rem]" style={{ zIndex: 20 }}>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
                 <ArrowsUpDownIcon className="h-3.5 w-3.5 text-[#E4DD3B]" />
@@ -366,7 +366,7 @@ const FilterBar: FC<FilterBarProps> = ({
               <select
                 value={getCombinedSortValue()}
                 onChange={handleSortChange}
-                className={`bg-black/50 border-b border-white/50 p-1.5 pl-7 w-full focus:outline-none focus:border-[#E4DD3B] transition-colors cursor-pointer appearance-none pr-7 text-sm ${
+                className={`bg-black/50 border-b border-white/50 p-1.5 pl-7 w-full focus:outline-none focus:border-[#E4DD3B] transition-colors cursor-pointer appearance-none pr-7 ${
                   getCombinedSortValue() ? "text-white" : "text-gray-400"
                 }`}
                 aria-label="Sort events"
@@ -392,15 +392,15 @@ const FilterBar: FC<FilterBarProps> = ({
         <div className="flex items-center gap-2 ml-4 flex-shrink-0 whitespace-nowrap">
           <button
             onClick={onClearFilters}
-            className="flex items-center justify-center px-3 py-1.5 bg-transparent text-white border border-white/50 hover:border-[#E4DD3B] transition-all duration-200 text-sm"
-          >
+            className="flex items-center justify-center px-2.5 py-1 2xl:px-3 2xl:py-1.5  bg-transparent text-white border border-white/50 hover:border-[#E4DD3B] transition-all duration-200 text-xs 2xl:text-sm"
+          > 
             <XMarkIcon className="h-3.5 w-3.5 mr-1.5 text-[#E4DD3B]" />
             <span className="font-montserrat-medium tracking-wide">Reset</span>
           </button>
 
           <button
             onClick={onApplyFilters}
-            className="px-4 py-1.5 bg-transparent border border-[#E4DD3B] text-[#E4DD3B] font-montserrat-medium hover:bg-[#E4DD3B]/10 transition-all duration-200 text-sm tracking-wide"
+            className="px-3 py-1 2xl:px-4 2xl:py-1.5 bg-transparent border border-[#E4DD3B] text-[#E4DD3B] font-montserrat-medium hover:bg-[#E4DD3B]/10 transition-all duration-200 text-xs 2xl:text-sm tracking-wide"
           >
             Apply
           </button>

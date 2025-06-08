@@ -44,12 +44,12 @@ const LandingPage: FC = () => {
         {/* Main Content */}
         <div
           className="absolute inset-0 z-20 flex flex-col justify-center items-center
-                    md:px-8 md:-translate-y-20 md:items-start"
+                    md:-translate-y-20 md:items-start"
         >
           {/* Main Text */}
           <div
-            className="text-white text-md md:text-xl mb-10 -mt-40 max-w-md text-center font-montserrat-bolder font-bold
-                      md:-mt-0 md:mb-12 md:ml-30 custom-text-shadow"
+            className="text-white text-md md:text-l mb-10 -mt-40 max-w-md text-center font-montserrat-bolder font-bold
+                      md:-mt-0 md:mb-12 md:ml-12 custom-text-shadow"
           >
             {t("landingPage.title")}
             <br />
@@ -62,19 +62,19 @@ const LandingPage: FC = () => {
           {/* City Buttons Container */}
           <div className="flex flex-col items-center md:items-start">
             {/* Top City Button (Tallinn) */}
-            <div className="relative mb-8 md:ml-60">
+            <div className="relative mb-8 md:ml-46">
               <div className="relative">
                 {/* Back Rectangle */}
                 <div
-                  className="absolute z-0 bg-black border-2 border-[#696969]/70 w-42 h-12 md:w-48 md:h-14
+                  className="absolute z-0 bg-black border-2 border-[#696969]/70 w-42 h-12 md:w-38 md:h-12
                             translate-x-2.5 translate-y-2.5"
                 />
                 {/* Front Rectangle */}
                 <button
                   aria-label="Select Tallinn"
-                  className="relative z-10 w-42 h-12 md:w-48 md:h-14 text-xl md:text-[1.4rem] text-[#929292]
+                  className="relative z-10 w-42 h-12 md:w-38 md:h-12 text-xl md:text-[1.2rem] text-[#929292]
                             font-dela-gothic-one font-black bg-[#494725] border-2 border-[#696969]/70
-                            uppercase flex items-end justify-center pb-3 md:pb-4 custom-text-shadow tracking-widest !cursor-default leading-none"
+                            uppercase flex items-end justify-center pb-3 md:pb-3 custom-text-shadow tracking-widest !cursor-default leading-none"
                   disabled
                 >
                   Tallinn
@@ -83,13 +83,13 @@ const LandingPage: FC = () => {
             </div>
 
             {/* Bottom Row with Two City Buttons */}
-            <div className="flex flex-row items-start space-x-8 md:space-x-12 md:ml-30">
+            <div className="flex flex-row items-start space-x-8 md:space-x-12 md:ml-20">
               {/* Tartu Button */}
               <div className="relative group hover:cursor-pointer pl-10 md:pl-0">
                 <div className="relative">
                   {/* Back Rectangle */}
                   <div
-                    className="absolute z-0 bg-black border-2 border-white/70 w-38 h-12 md:w-48 md:h-14
+                    className="absolute z-0 bg-black border-2 border-white/70 w-38 h-12 md:w-38 md:h-12
                                 translate-x-2.5 translate-y-2.5 transition-transform duration-200
                                 group-hover:-translate-x-3 group-hover:-translate-y-3 group-hover:bg-[#E4DD3B]"
                   />
@@ -97,9 +97,9 @@ const LandingPage: FC = () => {
                   <button
                     onClick={() => handleCitySelect("Tartu")}
                     aria-label="Select Tartu"
-                    className="relative z-10 w-38 h-12 md:w-48 md:h-14 text-xl md:text-[1.4rem] text-white
+                    className="relative z-10 w-38 h-12 md:w-38 md:h-12 text-xl md:text-[1.2rem] text-white
                                 font-dela-gothic-one font-black bg-[#E4DD3B] border-2 border-white/70
-                                uppercase flex items-end justify-center pb-3 md:pb-4 hover:bg-black
+                                uppercase flex items-end justify-center pb-3 md:pb-3 hover:bg-black
                                 transition-colors duration-200 custom-text-shadow tracking-widest leading-none"
                   >
                     Tartu
@@ -112,15 +112,15 @@ const LandingPage: FC = () => {
                 <div className="relative">
                   {/* Back Rectangle */}
                   <div
-                    className="absolute z-0 bg-black border-2 border-[#696969]/70 w-38 h-12 md:w-48 md:h-14
+                    className="absolute z-0 bg-black border-2 border-[#696969]/70 w-38 h-12 md:w-38 md:h-12
                                 translate-x-2.5 translate-y-2.5"
                   />
                   {/* Front Rectangle */}
                   <button
                     aria-label="Select Pärnu"
-                    className="relative z-10 w-38 h-12 md:w-48 md:h-14 text-xl md:text-[1.4rem] text-[#929292]
+                    className="relative z-10 w-38 h-12 md:w-38 md:h-12 text-xl md:text-[1.2rem] text-[#929292]
                             font-dela-gothic-one font-black bg-[#494725] border-2 border-[#696969]/70
-                            uppercase flex items-end justify-center pb-3 md:pb-4 custom-text-shadow tracking-widest !cursor-default leading-none"
+                            uppercase flex items-end justify-center pb-3 md:pb-3 custom-text-shadow tracking-widest !cursor-default leading-none"
                     disabled
                   >
                     Pärnu

@@ -327,7 +327,7 @@ const Events: FC = () => {
     if (scrollingDown) {
       for (let [date, el] of refs) {
         const top = el!.getBoundingClientRect().top;
-        if (top <= 80) {
+        if (top <= 76) {
           activeDate = date;
         } else {
           break;
@@ -337,7 +337,7 @@ const Events: FC = () => {
       for (let i = refs.length - 1; i >= 0; i--) {
         const [date, el] = refs[i];
         const top = el!.getBoundingClientRect().top;
-        if (top < 80) {
+        if (top < 76) {
           activeDate = date;
           break;
         }
@@ -374,18 +374,18 @@ const Events: FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen pt-8">
+    <div className="flex flex-col min-h-screen pt-3 2xl:p-5">
 
-      <div className="h-4"/>
       <TopPickEvents />
-      <div className="h-4"/>
 
-      <div className="flex-grow py-4 sm:py-6 sm:max-w-6xl w-full sm:mx-auto px-4 sm:px-8">
-        <div className="text-xl flex flex-col items-center justify-center mt-4 mb-6 text-white font-dela-gothic-one font-bold">
-          <span className="mb-2 font-montserrat-bolder text-[1.4rem]">
+
+      {/*CLOCK */}
+      <div className="flex-grow py-4 sm:py-2 sm:max-w-6xl w-full sm:mx-auto px-4 sm:px-8">
+        <div className="flex flex-col items-center justify-center mt-4 text-white font-dela-gothic-one font-bold">
+          <span className="mb-0 font-montserrat-bolder text-[0.8rem] 2xl:text-[1.2rem]">
             {cityParam}, Estonia
           </span>
-          <h1 className="text-4xl">
+          <h1 className="text-2xl 2xl:text-[2.4rem]">
             {currentTime.toLocaleTimeString("en-GB", {
               timeZone: "Europe/Tallinn",
               hour12: false,
@@ -394,11 +394,13 @@ const Events: FC = () => {
               second: "2-digit",
             })}
           </h1>
-          <div className="mt-4 w-1/2 border-t-2 border-[#E4DD3B]"></div>
+          <div className="mt-4 w-60 xs:w-100 md:w-150 lg:w-160 2xl:w-260 border-t-2 border-[#E4DD3B]"></div>
         </div>
       </div>
 
-      <div className="w-full flex justify-center mb-2 mt-0">
+
+      {/*filter bar */}
+      <div className="w-full flex justify-center">
         <div className="w-full max-w-7xl px-4 sm:px-8">
           <FilterBar
             events={events.map((ev) => ({
@@ -431,9 +433,12 @@ const Events: FC = () => {
         </div>
       </div>
 
-      <div className="flex-grow py-0 sm:py-2 sm:max-w-7xl w-full sm:mx-auto px-4 sm:px-8 flex flex-col items-center mb-16">
+      {/*dates+events */}
+      {/*TODO: see tuleb hierarhias allapoole liigutada et displayks aint ss kui eventid displaytakse*/}
+      <div className="flex justify-center py-0 sm:py-2 w-full px-4 sm:px-4 flex-col items-center mb-16">
+        {/*sticky date bar */}
         {currentStickyDate && (
-          <div className="w-190 mt-10 sticky top-[57px] z-40 py-2 bg-black text-[#fff] font-dela-gothic-one uppercase font-bold text-2xl tracking-wide text-left">
+          <div className="xs:w-100 md:w-150 lg:w-160 2xl:w-260 mx-auto mt-20 md:mt-5  2xl:mt-20 sticky top-[3rem] 2xl:top-[3.6rem] z-40 py-1 2xl:py-2 bg-black text-[#fff] font-dela-gothic-one uppercase font-bold text-xl 2xl:text-3xl tracking-wide text-left">
             {formatDateDisplay(currentStickyDate)}
           </div>
         )}
@@ -442,7 +447,9 @@ const Events: FC = () => {
             {error}
           </p>
         )}
-        <div className="space-y-8 w-full">
+
+        
+        <div className="space-y-8 w-full justify-items-center">
           {events.length === 0 && !error && !isSearchMode ? (
             <div className="flex justify-center items-center h-40">
               <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-white"></div>
@@ -487,7 +494,9 @@ const Events: FC = () => {
 
 
               return (
-                <div className="w-190 mx-auto" key={event.id}>
+
+                
+                <div className="xs:w-100 md:w-150 lg:w-160 2xl:w-260 mx-auto" key={event.id}>
 
                   {/* Changing non-sticky marquee */}
                   {showDateMarquee && notFirst && (
@@ -498,7 +507,7 @@ const Events: FC = () => {
                         }
                       }}
                       data-date={formattedDateTime}
-                      className="w-full z-41 mb-2 py-0 border-white font-dela-gothic-one bg-black text-white font-dela-gothic-one uppercase font-bold text-2xl tracking-wide text-left" 
+                      className="w-full z-41 mb-2 border-white font-dela-gothic-one bg-black text-white font-dela-gothic-one uppercase font-bold text-xl 2xl:text-3xl tracking-wide text-left" 
                     >
                       {formatDateDisplay(formattedDateTime)}
 
@@ -520,12 +529,15 @@ const Events: FC = () => {
                   )}
 
                   <div key={event.id} className="relative group mb-10 w-full">
-                    <div className="absolute w-full h-full translate-x-2 translate-y-2 bg-[#E4DD3B] z-0 transition-transform duration-200 group-hover:-translate-x-0 group-hover:-translate-y-0"></div>
+                    <div className="absolute w-full h-full translate-x-2 translate-y-2 bg-[#E4DD3B] z-0 transition-transform duration-200 group-hover:-translate-x-0 group-hover:-translate-y-0"/>
+
                     <div
-                      className="relative z-10 bg-black text-white border border-white/70 p-5 font-montserrat-medium flex flex-col sm:flex-row cursor-pointer mb-10 w-full"
+                      className="relative z-10 bg-black text-white border border-white/70 p-5  md:pb-2 2xl:pb-5 font-montserrat-medium flex flex-col sm:flex-row cursor-pointer mb-10 w-full"
                       onClick={() => handleEventClick(event.id)}
                     >
-                      <div className="absolute top-6 right-6 z-20 flex flex-col items-center space-y-2">
+
+                      {/* bookmark+fb buttons */}
+                      <div className="absolute top-4 right-3 2xl:top-6 2xl:right-6 z-20 flex flex-col items-center space-y-2">
                         <div
                           className={`flex items-center justify-center bg-black/60 border border-white/40 h-7 w-7 rounded-full ${
                             likingEventIds.has(event.id)
@@ -613,7 +625,7 @@ const Events: FC = () => {
                       </div>
 
                       {/* Event Image */}
-                      <div className="relative sm:w-1/3 mb-4 sm:mb-0 sm:-ml-2">
+                      <div className="relative sm:w-1/3 mb-4 sm:-ml-2 sm:-mt-2 sm:mb-0 2xl:mt-0 2xl:mb-0">
                         <LazyLoadImage
                           src={transformedUrl}
                           alt={event.title}
@@ -623,12 +635,12 @@ const Events: FC = () => {
                       </div>
 
                       {/* Event Main Info */}
-                      <div className="sm:w-1/3 flex flex-col justify-start sm:pl-12 mt-3 sm:mt-1 text-left group">
-                        <h2 className="text-md sm:text-[1rem] font-dela-gothic-one text-white uppercase">
+                      <div className="sm:w-1/3 flex flex-col justify-start pl-12 md:pl-6 2xl:pl-12 mt-3 sm:mt-1 text-left group max-w">
+                        <h2 className="text-md sm:text-[1rem] md:text-[0.9rem] 2xl:text-[1.5rem] font-dela-gothic-one text-white uppercase truncate">
                           {event.title}
                         </h2>
                         <p
-                          className="leading-[1.25] text-[0.6rem] sm:text-[0.7rem] text-balance text-white font-montserrat mt-3"
+                          className="leading-[1.25] text-[0.6rem] sm:text-[0.65rem] 2xl:text-[0.9rem] text-balance text-white font-montserrat mt-3"
                           style={{ wordSpacing: "0.03em" }}
                         >
                           {truncateDescription(
@@ -638,22 +650,24 @@ const Events: FC = () => {
                               : window.innerWidth < 768
                               ? 0
                               : window.innerWidth < 1024
-                              ? 100
+                              ? 140
                               : window.innerWidth < 1280
-                              ? 150
-                              : 250
+                              ? 210
+                              : window.innerWidth < 1680
+                              ? 210
+                              : 360
                           )}
                         </p>
-                        <p className="text-xs hidden sm:block sm:text-xs text-[#E4DD3B] font-montserrat-medium mt-2 transition-colors">
+                        <p className="text-xs hidden sm:block sm:text-xs 2xl:text-sm text-[#E4DD3B] font-montserrat-medium mt-2 transition-colors">
                           Read More →
                         </p>
                       </div>
 
                       {/* Event Side Info */}
-                      <div className="sm:w-1/3 flex flex-col justify-between items-start pl-0 sm:pl-12 mt-4 sm:mt-0">
-                        <div className="w-full mb-4">
+                      <div className="text-[1rem] sm:text-[0.7rem] md:text-[0.7rem] 2xl:text-[1rem] sm:w-1/3 flex flex-col justify-between items-start pl-0 sm:pl-8 md:pl-4 2xl:pl-8 mt-4 sm:mt-0">
+                        <div className="w-full mb-4 flex flex-col justify-evenly">
                           {/* Location */}
-                          <div className="flex items-center mt-2 sm:mt-4">
+                          <div className="flex items-center mt-1 2xl:mt-4">
                             <svg
                               width="20"
                               height="20"
@@ -670,7 +684,7 @@ const Events: FC = () => {
                               />
                               <circle cx="12" cy="10" r="3" stroke="#E4DD3B" />
                             </svg>
-                            <p className="text-[1rem] sm:text-[0.7rem] text-white font-montserrat-medium ml-2.5">
+                            <p className="text-white font-montserrat-medium ml-2.5">
                               {event.venue}
                             </p>
                           </div>
@@ -678,7 +692,7 @@ const Events: FC = () => {
                           {/* Times */}
                           <div className="flex items-center mt-3 sm:mt-4">
                             <CalendarIcon className="h-5 w-5 text-[#E4DD3B]" />
-                            <p className="text-[1rem] sm:text-[0.7rem] text-white font-montserrat-medium ml-2.5">
+                            <p className="text-white font-montserrat-medium ml-2.5">
                               {new Date(event.openTime).toLocaleTimeString([], {
                                 hour: "2-digit",
                                 minute: "2-digit",
@@ -750,7 +764,7 @@ const Events: FC = () => {
                                 />
                               </g>
                             </svg>
-                            <p className="text-[1rem] sm:text-[0.7rem] text-white font-montserrat-medium ml-2.5">
+                            <p className=" text-white font-montserrat-medium ml-2.5">
                               {event.ticket > 0 ? `€${event.ticket}` : "FREE"}
                             </p>
                           </div>
@@ -772,7 +786,7 @@ const Events: FC = () => {
                               <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
                               <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                             </svg>
-                            <p className="text-[1rem] sm:text-[0.7rem] text-white font-montserrat-medium ml-2.5">
+                            <p className=" text-white font-montserrat-medium ml-2.5">
                               {event.likeCount}
                             </p>
                           </div>
