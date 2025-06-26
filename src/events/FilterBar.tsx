@@ -238,11 +238,11 @@ const FilterBar: FC<FilterBarProps> = ({
 
   return (
     <div className="mx-auto my-2 bg-black border border-white/70 shadow-md overflow-hidden xs:w-100 md:w-150 lg:w-160 2xl:w-260">
-      <div className="p-3 flex items-end justify-between">
+      <div className="p-3 flex flex-col sm:flex-row sm:items-end sm:justify-between">
         {/* Filters Container */}
-        <div className="flex items-end space-x-4 md:w-[28.5rem] 2xl:w-[40rem] text-xs 2xl:text-lg">
+        <div className="grid grid-cols-2 sm:flex sm:items-end gap-3 sm:space-x-4 md:w-[28.5rem] 2xl:w-[40rem] text-xs 2xl:text-lg">
           {/* Search Filter */}
-          <div className="w-30.5 lg:w-[8rem] 2xl:w-[20rem]">
+          <div className="w-full sm:w-30.5 lg:w-[8rem] 2xl:w-[20rem]">
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
                 <MagnifyingGlassIcon className="h-3.5 w-3.5 text-[#E4DD3B]" />
@@ -260,7 +260,10 @@ const FilterBar: FC<FilterBarProps> = ({
           </div>
 
           {/* Venue Filter */}
-          <div className="lg:w-[9rem] 2xl:w-[20rem]" style={{ zIndex: 30 }}>
+          <div
+            className="w-full sm:w-auto lg:w-[9rem] 2xl:w-[20rem]"
+            style={{ zIndex: 30 }}
+          >
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
                 <svg
@@ -305,7 +308,7 @@ const FilterBar: FC<FilterBarProps> = ({
 
           {/* Date Filter */}
           <div
-            className="lg:w-[10rem] 2xl:w-[20rem] relative"
+            className="w-full sm:w-auto lg:w-[10rem] 2xl:w-[20rem] relative"
             ref={datePickerRef}
             style={{ zIndex: 30 }}
           >
@@ -362,7 +365,10 @@ const FilterBar: FC<FilterBarProps> = ({
           </div>
 
           {/* Sorting */}
-          <div className="lg:w-[8rem] 2xl:w-[20rem]" style={{ zIndex: 20 }}>
+          <div
+            className="w-full sm:w-auto lg:w-[8rem] 2xl:w-[20rem]"
+            style={{ zIndex: 20 }}
+          >
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
                 <ArrowsUpDownIcon className="h-3.5 w-3.5 text-[#E4DD3B]" />
@@ -393,10 +399,10 @@ const FilterBar: FC<FilterBarProps> = ({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-2 ml-4 flex-shrink-0 whitespace-nowrap">
+        <div className="flex items-center gap-2 mt-4 sm:mt-0 sm:ml-4 flex-shrink-0 whitespace-nowrap justify-end">
           <button
             onClick={onClearFilters}
-            className="flex items-center justify-center px-2.5 py-1 2xl:px-3 2xl:py-1.5  bg-transparent text-white border border-white/50 hover:border-[#E4DD3B] transition-all duration-200 text-xs 2xl:text-sm"
+            className="flex items-center justify-center px-2.5 py-1 2xl:px-3 2xl:py-1.5 bg-transparent text-white border border-white/50 hover:border-[#E4DD3B] transition-all duration-200 text-xs 2xl:text-sm"
           >
             <XMarkIcon className="h-3.5 w-3.5 mr-1.5 text-[#E4DD3B]" />
             <span className="font-montserrat-medium tracking-wide">Reset</span>

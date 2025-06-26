@@ -11,6 +11,9 @@ import LandingPage from "./LandingPage.tsx";
 import Header from "./shared/Header.tsx";
 import PrivateRoute from "./authentication/PrivateRoute";
 import ProtectedRoute from "./authentication/ProtectedRoute";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { queryClient } from "./shared/queryClient";
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -46,41 +49,44 @@ const LoadingFallback: React.FC = () => (
 const App: React.FC = () => {
   return (
     <StrictMode>
-      <Router>
-        <AuthProvider>
-          <Header />
-          <ScrollToTop />
-          <Suspense fallback={<LoadingFallback />}>
-            <Routes>
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/events" element={<Events />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/auth" element={<Login />} />
-              <Route path="/events/:id" element={<EventDetail />} />
+      <QueryClientProvider client={queryClient}>
+        <Router>
+          <AuthProvider>
+            <Header />
+            <ScrollToTop />
+            <Suspense fallback={<LoadingFallback />}>
+              <Routes>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/events" element={<Events />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/auth" element={<Login />} />
+                <Route path="/events/:id" element={<EventDetail />} />
 
-              <Route
-                path="/profile"
-                element={
-                  <PrivateRoute>
-                    <Profile />
-                  </PrivateRoute>
-                }
-              />
+                <Route
+                  path="/profile"
+                  element={
+                    <PrivateRoute>
+                      <Profile />
+                    </PrivateRoute>
+                  }
+                />
 
-              <Route
-                path="/admin"
-                element={
-                  <ProtectedRoute>
-                    <AdminPanel />
-                  </ProtectedRoute>
-                }
-              />
+                <Route
+                  path="/admin"
+                  element={
+                    <ProtectedRoute>
+                      <AdminPanel />
+                    </ProtectedRoute>
+                  }
+                />
 
-              <Route path="*" element={<LandingPage />} />
-            </Routes>
-          </Suspense>
-        </AuthProvider>
-      </Router>
+                <Route path="*" element={<LandingPage />} />
+              </Routes>
+            </Suspense>
+          </AuthProvider>
+        </Router>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
     </StrictMode>
   );
 };

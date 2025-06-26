@@ -4,29 +4,6 @@ import { getTopPickEvents, Event } from "../shared/reducers/event";
 import { useNavigate } from "react-router-dom";
 import { formatDate } from "../shared/helpers";
 
-export const TopPicks: FC = () => {
-  return (
-    <Marquee
-      className="bg-[#E4DD3B] border-b-2 border-t-2 border-[#E4DD3B] text-black font-dela-gothic-one mb-3 py-0.5"
-      style={{
-        textShadow:
-          "1px 1px 2px white, -1px -1px 2px white, 1px -1px 2px white, -1px 1px 2px white",
-      }}
-      direction="right"
-    >
-      <span className="text-xl mx-4">TOP PICKS</span>
-      <span className="text-xl mx-4">TOP PICKS</span>
-      <span className="text-xl mx-4">TOP PICKS</span>
-      <span className="text-xl mx-4">TOP PICKS</span>
-      <span className="text-xl mx-4">TOP PICKS</span>
-      <span className="text-xl mx-4">TOP PICKS</span>
-      <span className="text-xl mx-4">TOP PICKS</span>
-      <span className="text-xl mx-4">TOP PICKS</span>
-      <span className="text-xl mx-4">TOP PICKS</span>
-    </Marquee>
-  );
-};
-
 export const TopPickEvents: FC = () => {
   const [topEvents, setTopEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
@@ -51,10 +28,37 @@ export const TopPickEvents: FC = () => {
     navigate(`/events/${eventId}`);
   };
 
+  // Create loading placeholders that match the size of actual events
+  const loadingPlaceholders = Array(3)
+    .fill(null)
+    .map((_, index) => (
+      <div key={`loading-${index}`} className="mx-4 mt-2">
+        <div className="relative group">
+          <div className="absolute w-full h-full translate-x-0 translate-y-0 bg-[#E4DD3B] z-0"></div>
+          <div className="relative inline-flex flex-col justify-between items-start z-10 p-3 border border-white/70 bg-black text-white w-56 h-16 2xl:w-84 2xl:h-24">
+            {/* Title placeholder */}
+            <div className="w-3/4 h-3 2xl:h-4 bg-white/20 animate-pulse rounded"></div>
+
+            {/* Info row placeholder */}
+            <div className="flex w-full justify-between items-center mt-2">
+              <div className="flex items-center">
+                <div className="w-3 h-3 2xl:w-4 2xl:h-4 bg-[#E4DD3B]/20 rounded-full"></div>
+                <div className="w-16 h-2 2xl:h-3 bg-white/20 ml-1.5 animate-pulse rounded"></div>
+              </div>
+              <div className="flex items-center">
+                <div className="w-3 h-3 2xl:w-4 2xl:h-4 bg-[#E4DD3B]/20 rounded-full"></div>
+                <div className="w-12 h-2 2xl:h-3 bg-white/20 ml-1.5 animate-pulse rounded"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    ));
+
   return (
     <div className="overflow-hidden">
       <Marquee
-        className="pb-3 bg-black border-b-2 border-white/70 text-white"
+        className="py-3 bg-black border-b-2 border-white/70 text-white mt-2"
         style={{ overflowY: "hidden" }}
         autoFill
         pauseOnHover
@@ -62,21 +66,26 @@ export const TopPickEvents: FC = () => {
         loop={0}
       >
         {loading ? (
-          <div className="text-base mx-4">LOADING...</div>
+          loadingPlaceholders
         ) : topEvents.length === 0 ? (
-          <div className="text-base mx-4">😤 NO TOP PICKS AT THE MOMENT 😤</div>
+          <div className="text-base mx-4 mt-2 relative group">
+            <div className="absolute w-full h-full translate-x-0 translate-y-0 bg-[#E4DD3B] z-0"></div>
+            <div className="relative inline-flex flex-col justify-center items-center z-10 p-3 border border-white/70 bg-black text-white w-56 h-16 2xl:w-84 2xl:h-24">
+              <span>😤 NO TOP PICKS AT THE MOMENT 😤</span>
+            </div>
+          </div>
         ) : (
           topEvents.map((event) => (
             <div
               key={event.id}
-              className="relative group mx-4 cursor-pointer"
+              className="relative group mx-4 mt-2 cursor-pointer"
               onClick={() => handleEventClick(event.id)}
             >
               <div className="absolute w-full h-full translate-x-0 translate-y-0 bg-[#E4DD3B] z-0 transition-transform duration-150 group-hover:translate-x-2 group-hover:translate-y-2"></div>
               <div
-                  className="relative inline-flex flex-col justify-between items-start z-10 p-3 border border-white/70 bg-black text-white
+                className="relative inline-flex flex-col justify-between items-start z-10 p-3 border border-white/70 bg-black text-white
                             w-56 h-16 2xl:w-84 2xl:h-24"
-                >
+              >
                 {/* Title row */}
                 <div className="text-xs 2xl:text-lg font-montserrat-bolder uppercase w-full truncate">
                   {event.title}

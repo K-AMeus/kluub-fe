@@ -1,4 +1,4 @@
-import { FC, useState, useRef, useEffect } from "react";
+import { FC, useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Dialog, DialogPanel } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
@@ -46,7 +46,7 @@ const NavigationLinks: FC<NavigationLinksProps> = ({
           {/* Front Rectangle */}
           <Link
             to={item.href}
-            className="relative z-10 inline-block w-28 md:w-24 2xl:w-28 h-8 md:h-7 2xl:h-8 px-1 py-1 text-sm md:text-xs 2xl:text-sm bg-black text-white border-1 border-white/70 font-montserrat-medium uppercase text-center transition-colors duration-200 pt-1.5 leading-tight tracking-wide hover:bg-black"
+            className="relative z-10 inline-block w-32 md:w-28 2xl:w-32 h-9 md:h-8 2xl:h-9 px-1 py-1 text-base md:text-sm 2xl:text-base bg-black text-white border-1 border-white/70 font-montserrat-medium uppercase text-center transition-colors duration-200 pt-1.5 leading-tight tracking-wide hover:bg-black"
             onClick={() => {
               window.scrollTo(0, 0);
               if (onLinkClick) onLinkClick();
@@ -63,7 +63,7 @@ const NavigationLinks: FC<NavigationLinksProps> = ({
           {/* Front Rectangle */}
           <Link
             to="/admin"
-            className="relative z-10 inline-block w-28 md:w-24 2xl:w-28 h-8 md:h-7 2xl:h-8 px-1 py-1 text-sm md:text-xs 2xl:text-sm bg-black text-white border-1 border-white/70 font-montserrat-medium uppercase text-center transition-colors duration-200 pt-1.5 leading-tight tracking-wide hover:bg-black"
+            className="relative z-10 inline-block w-32 md:w-28 2xl:w-32 h-9 md:h-8 2xl:h-9 px-1 py-1 text-base md:text-sm 2xl:text-base bg-black text-white border-1 border-white/70 font-montserrat-medium uppercase text-center transition-colors duration-200 pt-1.5 leading-tight tracking-wide hover:bg-black"
             onClick={() => {
               if (onLinkClick) onLinkClick();
             }}
@@ -138,132 +138,10 @@ const NavigationLinksVertical: FC<NavigationLinksProps> = ({
     </div>
   );
 };
-// New interface for the Profile dropdown
-interface ProfileDropdownProps {
-  user: User;
-  onProfile: () => void;
-  onLogout: () => void;
-}
-
-// Desktop profile avatar + dropdown
-const ProfileDropdown: FC<ProfileDropdownProps> = ({
-  user,
-  onProfile,
-  onLogout,
-}) => {
-  const [open, setOpen] = useState(false);
-  const initial = user.email?.charAt(0).toUpperCase() ?? "U";
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-
-  const toggleOpen = () => setOpen(!open);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node) &&
-        buttonRef.current &&
-        !buttonRef.current.contains(event.target as Node)
-      ) {
-        setOpen(false);
-      }
-    };
-
-    if (open) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [open]);
-
-  return (
-    <div className="relative" ref={dropdownRef}>
-      <button
-        ref={buttonRef}
-        onClick={toggleOpen}
-        className="relative flex items-center justify-center p-2"
-      >
-        <div className="h-10 w-10 rounded-full flex items-center justify-center text-white bg-black border-2 border-[#E4DD3B]">
-          {initial}
-        </div>
-      </button>
-      {open && (
-        <div
-          className="absolute right-0 top-14 bg-black border-2 border-white/70 text-white
-                       font-montserrat-medium w-40 z-50"
-        >
-          <button
-            onClick={() => {
-              onProfile();
-              setOpen(false);
-            }}
-            className="block w-full px-4 py-2 text-left hover:bg-gray-800"
-          >
-            Profile
-          </button>
-          <button
-            onClick={() => {
-              onLogout();
-              setOpen(false);
-            }}
-            className="block w-full px-4 py-2 text-left hover:bg-gray-800"
-          >
-            Log Out
-          </button>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// Mobile version of the profile section
-interface MobileProfileProps {
-  user: User;
-  onProfile: () => void;
-  onLogout: () => void;
-}
-
-const MobileProfile: FC<MobileProfileProps> = ({
-  user,
-  onProfile,
-  onLogout,
-}) => {
-  const initial = user.email?.charAt(0).toUpperCase() ?? "U";
-
-  return (
-    <div className="flex flex-col items-center space-y-6 mt-8 w-full">
-      {/* Profile avatar */}
-      <div
-        className="relative flex items-center justify-center p-2 hover:cursor-pointer group"
-        onClick={onProfile}
-      >
-        <div className="h-16 w-16 rounded-full flex items-center justify-center text-white bg-black border-2 border-[#E4DD3B] text-2xl transition-transform duration-200 group-hover:scale-110">
-          {initial}
-        </div>
-      </div>
-
-      {/* Log out button */}
-      <div className="relative flex-none group hover:cursor-pointer">
-        <button
-          onClick={onLogout}
-          className="relative z-10 inline-block w-40 h-10 px-4 py-1 text-xl
-                     bg-black text-white border-2 border-white/70 font-montserrat-medium
-                     uppercase text-center transition-colors duration-200 pt-1.5 leading-tight
-                     tracking-wide hover:bg-black"
-        >
-          Log Out
-        </button>
-      </div>
-    </div>
-  );
-};
 
 const Header: FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { user, isAdmin, logout } = useAuth();
+  const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -271,24 +149,15 @@ const Header: FC = () => {
     setMobileMenuOpen(false);
   }, [location]);
 
-  const handleProfile = () => {
-    navigate("/profile");
-  };
-
-  const handleLogout = async () => {
-    await logout();
-    navigate("/");
-  };
-
   return (
     <header className="bg-black bg-opacity-100 fixed top-0 -left-1 -right-1 z-50 font-montserrat-medium border-b-2 border-white/70">
-      <nav className="px-8 lg:px-10 2xl:px-20 flex items-center justify-between h-12 2xl:h-14 relative z-10">
+      <nav className="px-8 lg:px-10 2xl:px-20 flex items-center justify-between h-14 2xl:h-16 relative z-10">
         {/* Left Section: Logo */}
         <div className="flex items-center md:pr-2">
           <Link
             to="/"
-            className="text-white font-dela-gothic-one text-[1.6rem] 2xl:text-3xl relative
-                       after:absolute after:left-0 after:-bottom-0 after:w-0 after:h-0.5
+            className="text-white font-dela-gothic-one text-[1.8rem] 2xl:text-4xl relative
+                       after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-1
                        after:bg-[#E4DD3B] after:transition-all after:duration-300
                        hover:after:w-full"
             onClick={() => window.scrollTo(0, 0)}
@@ -308,11 +177,14 @@ const Header: FC = () => {
           <div className="flex items-center space-x-4">
             <LanguageSwitcher />
             {user && (
-              <ProfileDropdown
-                user={user}
-                onProfile={handleProfile}
-                onLogout={handleLogout}
-              />
+              <div
+                onClick={() => navigate("/profile")}
+                className="relative flex items-center justify-center p-2 cursor-pointer group"
+              >
+                <div className="h-10 w-10 rounded-full flex items-center justify-center text-white bg-black border-2 border-[#E4DD3B] transition-transform duration-200 group-hover:scale-110">
+                  {user.email?.charAt(0).toUpperCase() ?? "U"}
+                </div>
+              </div>
             )}
           </div>
         </div>
@@ -368,16 +240,6 @@ const Header: FC = () => {
               />
               <LanguageSwitcher />
             </div>
-
-            {user && (
-              <div className="mt-6 pt-4 pb-2 px-5">
-                <MobileProfile
-                  user={user}
-                  onProfile={handleProfile}
-                  onLogout={handleLogout}
-                />
-              </div>
-            )}
 
             <footer className="absolute bottom-0 left-0 w-full z-70">
               <div className="absolute bottom-24 w-full flex flex-col items-center text-white pb-20">

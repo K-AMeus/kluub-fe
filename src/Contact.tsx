@@ -26,7 +26,7 @@ const teamMembers = [
 
 const Contact: FC = () => {
   return (
-    <div className="relative min-h-screen flex flex-col text-white font-dela-gothic-one">
+    <div className="relative min-h-screen flex flex-col text-white font-montserrat-medium">
       <div className="absolute inset-0 area z-0"></div>
 
       <div className="relative py-12 sm:max-w-6xl w-full sm:mx-auto px-8 flex-grow">
