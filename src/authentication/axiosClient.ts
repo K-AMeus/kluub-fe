@@ -2,7 +2,7 @@ import axios from "axios";
 import { firebaseAuth } from "./firebaseConfig";
 
 const axiosClient = axios.create({
-  baseURL: "https://kluubbe-production.up.railway.app",
+  baseURL: "https://kluub-be-production.up.railway.app",
 });
 
 axiosClient.interceptors.request.use(
