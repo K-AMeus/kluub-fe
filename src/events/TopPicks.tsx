@@ -16,7 +16,9 @@ export const TopPickEvents: FC = () => {
         const events = response?.content || [];
         setTopEvents(events);
       } catch (error) {
-        console.error("Failed to fetch top events:", error);
+        if (process.env.NODE_ENV === "development") {
+          console.error("Failed to fetch top events:", error);
+        }
       } finally {
         setLoading(false);
       }

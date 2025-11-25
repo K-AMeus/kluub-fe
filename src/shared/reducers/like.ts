@@ -2,27 +2,16 @@ import axiosClient from "../../authentication/axiosClient";
 import { PageableResponse } from "../helpers";
 import { Event } from "./event";
 
-export const likeEvent = async (
-  eventId: string,
-  userId: string,
-  idToken: string
-) => {
+export const likeEvent = async (eventId: string, userId: string) => {
   const response = await axiosClient.post(
-    `/api/event-service/v1/events/${eventId}/likes?userId=${userId}`,
-    {},
-    { headers: { Authorization: `Bearer ${idToken}` } }
+    `/api/event-service/v1/events/${eventId}/likes?userId=${userId}`
   );
   return response.data;
 };
 
-export const unlikeEvent = async (
-  eventId: string,
-  userId: string,
-  idToken: string
-) => {
+export const unlikeEvent = async (eventId: string, userId: string) => {
   const response = await axiosClient.delete(
-    `/api/event-service/v1/events/${eventId}/likes?userId=${userId}`,
-    { headers: { Authorization: `Bearer ${idToken}` } }
+    `/api/event-service/v1/events/${eventId}/likes?userId=${userId}`
   );
   return response.data;
 };

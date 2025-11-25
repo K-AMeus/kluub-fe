@@ -1,5 +1,4 @@
 import { FC, useEffect, useState } from "react";
-import axios from "axios";
 import { useAuth } from "./authentication/AuthContext";
 import Footer from "./shared/Footer";
 import { getLikedEvents } from "./shared/reducers/like";
@@ -10,12 +9,6 @@ import { useNavigate } from "react-router-dom";
 interface EventItem {
   id: string;
   name: string;
-}
-
-interface LikedEventsResponse {
-  events: AppEvent[];
-  currentPage: number;
-  totalPages: number;
 }
 
 function getInitials(email?: string | null): string {
@@ -47,7 +40,9 @@ const Profile: FC = () => {
           }))
         );
       } catch (err) {
-        console.error("Error fetching liked events:", err);
+        if (process.env.NODE_ENV === "development") {
+          console.error("Error fetching liked events:", err);
+        }
         setError("Failed to fetch liked events. Please try again later.");
       } finally {
         setIsLoading(false);
@@ -59,30 +54,28 @@ const Profile: FC = () => {
 
   const handlePageChange = async (newPage: number) => {
     if (newPage < 0 || newPage >= totalPages) return;
+    if (!user) return;
 
     setIsLoading(true);
     try {
-      const idToken = user ? await user.getIdToken() : "";
-      const response = await axios.get<LikedEventsResponse>(
-        `https://partynbackend-production.up.railway.app/events/liked?page=${newPage}&size=20`,
-        { headers: { Authorization: `Bearer ${idToken}` } }
-      );
+      const data = (await getLikedEvents(
+        user.uid,
+        newPage,
+        20
+      )) as PageableResponse<AppEvent>;
 
-      if (response.data && response.data.events) {
-        setLikedEvents(
-          response.data.events.map((event: AppEvent) => ({
-            id: event.id,
-            name: event.title,
-          }))
-        );
-        setCurrentPage(response.data.currentPage || 0);
-        setTotalPages(response.data.totalPages || 0);
-      } else {
-        setLikedEvents([]);
-        setError("Unexpected response format from server.");
-      }
+      setLikedEvents(
+        data.content.map((event: AppEvent) => ({
+          id: event.id,
+          name: event.title,
+        }))
+      );
+      setCurrentPage(data.page || 0);
+      setTotalPages(data.totalPages || 0);
     } catch (err) {
-      console.error("Error fetching liked events:", err);
+      if (process.env.NODE_ENV === "development") {
+        console.error("Error fetching liked events:", err);
+      }
       setError("Failed to fetch liked events. Please try again later.");
     } finally {
       setIsLoading(false);
@@ -144,7 +137,9 @@ const Profile: FC = () => {
                     await logout();
                     navigate("/");
                   } catch (error) {
-                    console.error("Error logging out:", error);
+                    if (process.env.NODE_ENV === "development") {
+                      console.error("Error logging out:", error);
+                    }
                   }
                 }}
                 className="w-full py-2.5 mt-6 text-sm font-montserrat-medium text-white border border-[#E4DD3B] hover:bg-[#E4DD3B]/10 transition-colors uppercase tracking-wider"

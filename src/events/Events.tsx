@@ -10,6 +10,7 @@ import { fill } from "@cloudinary/url-gen/actions/resize";
 import { Event } from "../shared/reducers/event";
 import mockEventsData from "../shared/mock-events.json";
 import EventCard from "./EventCard.tsx";
+import { useThrottle } from "../shared/hooks/useThrottle";
 
 const cld = new Cloudinary({ cloud: { cloudName: "dgptexs0w" } });
 
@@ -19,7 +20,7 @@ const getCloudinaryUrl = (publicId: string, width: number, height: number) => {
 
 const DateSkeleton = () => (
   <div className="w-full">
-    <div className="w-full z-41 mb-2 font-dela-gothic-one bg-black">
+    <div className="w-full z-30 mb-2 font-dela-gothic-one bg-black">
       <div className="w-48 h-8 2xl:h-12 bg-white/10 animate-pulse" />
     </div>
   </div>
@@ -27,58 +28,53 @@ const DateSkeleton = () => (
 
 const EventSkeleton = () => (
   <div className="xs:w-100 md:w-150 lg:w-160 2xl:w-260 mx-auto">
-    <div className="relative group mb-10 w-full">
-      <div className="absolute w-full h-[400px] sm:h-[300px] translate-x-2 translate-y-2 bg-[#E4DD3B] z-0" />
-      <div className="relative z-10 bg-black text-white border border-white/70 p-5 md:pb-2 2xl:pb-5 font-montserrat-medium flex flex-col sm:flex-row w-full h-[400px] sm:h-[300px]">
+    <div className="relative group mb-8 w-full">
+      <div className="absolute w-full h-[360px] sm:h-[200px] translate-x-2 translate-y-2 bg-[#E4DD3B] z-0" />
+      <div className="relative z-10 bg-black text-white border border-white/70 p-4 md:p-3 2xl:p-4 font-montserrat-medium flex flex-col sm:flex-row w-full h-[420px] sm:h-[200px]">
         {/* Image Skeleton */}
-        <div className="relative sm:w-1/3 mb-4 sm:-ml-2 sm:-mt-2 sm:mb-0 2xl:mt-0 2xl:mb-0 h-48 sm:h-full">
+        <div className="relative sm:w-1/4 mb-3 sm:mb-0 sm:-ml-2 sm:-mt-2 h-40 sm:h-full">
           <div className="w-full h-full bg-white/10 animate-pulse border-2 border-[#E4DD3B]" />
         </div>
 
         {/* Main Info Skeleton */}
-        <div className="sm:w-1/3 flex flex-col justify-start pl-12 md:pl-6 2xl:pl-12 mt-3 sm:mt-1 text-left h-full">
+        <div className="sm:w-5/12 flex flex-col justify-start pl-0 sm:pl-6 md:pl-4 2xl:pl-8 text-left h-full">
           {/* Title */}
-          <div className="h-6 2xl:h-8 w-3/4 bg-white/10 animate-pulse" />
+          <div className="h-5 2xl:h-6 w-3/4 bg-white/10 animate-pulse" />
 
           {/* Description */}
-          <div className="mt-3 flex-grow space-y-2">
-            <div className="h-3 w-full bg-white/10 animate-pulse" />
-            <div className="h-3 w-5/6 bg-white/10 animate-pulse" />
-            <div className="h-3 w-4/6 bg-white/10 animate-pulse" />
-            <div className="h-3 w-3/4 bg-white/10 animate-pulse" />
-            <div className="h-3 w-2/3 bg-white/10 animate-pulse" />
-            <div className="h-3 w-full bg-white/10 animate-pulse" />
+          <div className="mt-2 flex-grow space-y-1.5">
+            <div className="h-2.5 w-full bg-white/10 animate-pulse" />
+            <div className="h-2.5 w-5/6 bg-white/10 animate-pulse" />
+            <div className="h-2.5 w-4/6 bg-white/10 animate-pulse" />
+            <div className="h-2.5 w-full bg-white/10 animate-pulse" />
           </div>
 
           {/* Read More */}
-          <div className="h-4 w-24 bg-[#E4DD3B]/20 animate-pulse mt-2 hidden sm:block" />
+          <div className="h-3 w-20 bg-[#E4DD3B]/20 animate-pulse mt-1.5 hidden sm:block" />
         </div>
 
         {/* Side Info Skeleton */}
-        <div className="text-[1rem] sm:text-[0.7rem] md:text-[0.7rem] 2xl:text-[1rem] sm:w-1/3 flex flex-col justify-between items-start pl-0 sm:pl-8 md:pl-4 2xl:pl-8 mt-4 sm:mt-0">
-          <div className="w-full flex flex-col justify-evenly h-full space-y-8">
+        <div className="text-[0.75rem] sm:text-[0.65rem] md:text-[0.65rem] 2xl:text-[0.9rem] sm:w-1/3 flex flex-col items-start pl-0 sm:pl-4 md:pl-3 2xl:pl-6 mt-3 sm:mt-0">
+          <div className="w-full flex flex-col space-y-2">
             {/* Location */}
             <div className="flex items-center">
-              <div className="w-5 h-5 rounded-full bg-[#E4DD3B]/20 animate-pulse" />
-              <div className="h-5 w-32 bg-white/10 animate-pulse ml-2.5" />
+              <div className="w-4 h-4 rounded-full bg-[#E4DD3B]/20 animate-pulse flex-shrink-0" />
+              <div className="h-4 w-24 bg-white/10 animate-pulse ml-2" />
             </div>
 
             {/* Time */}
             <div className="flex items-center">
-              <div className="w-5 h-5 rounded-full bg-[#E4DD3B]/20 animate-pulse" />
-              <div className="h-5 w-40 bg-white/10 animate-pulse ml-2.5" />
+              <div className="w-4 h-4 rounded-full bg-[#E4DD3B]/20 animate-pulse flex-shrink-0" />
+              <div className="h-4 w-32 bg-white/10 animate-pulse ml-2" />
             </div>
 
-            {/* Price */}
-            <div className="flex items-center">
-              <div className="w-5 h-5 rounded-full bg-[#E4DD3B]/20 animate-pulse" />
-              <div className="h-5 w-24 bg-white/10 animate-pulse ml-2.5" />
-            </div>
-
-            {/* Likes */}
-            <div className="flex items-center">
-              <div className="w-5 h-5 rounded-full bg-[#E4DD3B]/20 animate-pulse" />
-              <div className="h-5 w-16 bg-white/10 animate-pulse ml-2.5" />
+            {/* Price & Facebook */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="w-4 h-4 rounded-full bg-[#E4DD3B]/20 animate-pulse flex-shrink-0" />
+                <div className="h-4 w-16 bg-white/10 animate-pulse ml-2" />
+              </div>
+              <div className="w-4 h-4 rounded-full bg-[#E4DD3B]/20 animate-pulse" />
             </div>
           </div>
         </div>
@@ -164,65 +160,51 @@ const Events: FC = () => {
   const dateRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const previousDate = useRef<string>("");
 
-  useEffect(() => {
-    let lastScrollY = window.scrollY;
+  const handleScrollInternal = useCallback(() => {
+    // Only process scroll events if we have events to display
+    if (events.length === 0) {
+      setCurrentStickyDate("");
+      return;
+    }
 
-    const handleScroll = () => {
-      // Only process scroll events if we have events to display
-      if (events.length === 0) {
-        setCurrentStickyDate("");
-        return;
-      }
+    const refs = Object.entries(dateRefs.current)
+      .filter(([, el]) => el !== null)
+      .sort(
+        ([, aEl], [, bEl]) =>
+          aEl!.getBoundingClientRect().top - bEl!.getBoundingClientRect().top
+      );
 
-      const scrollY = window.scrollY;
-      const scrollingDown = scrollY > lastScrollY;
-      lastScrollY = scrollY;
+    let activeDate: string | null = null;
 
-      const refs = Object.entries(dateRefs.current)
-        .filter(([, el]) => el !== null)
-        .sort(
-          ([, aEl], [, bEl]) =>
-            aEl!.getBoundingClientRect().top - bEl!.getBoundingClientRect().top
-        );
-
-      let activeDate: string | null = null;
-
-      if (scrollingDown) {
-        for (const [date, el] of refs) {
-          const top = el!.getBoundingClientRect().top;
-          if (top <= 76) {
-            activeDate = date;
-          } else {
-            break;
-          }
-        }
+    // Simplified logic - just find the topmost visible date
+    for (const [date, el] of refs) {
+      const top = el!.getBoundingClientRect().top;
+      if (top <= 76) {
+        activeDate = date;
       } else {
-        for (let i = refs.length - 1; i >= 0; i--) {
-          const [date, el] = refs[i];
-          const top = el!.getBoundingClientRect().top;
-          if (top < 76) {
-            activeDate = date;
-            break;
-          }
-        }
+        break;
       }
+    }
 
-      if (!activeDate && refs.length > 0) {
-        activeDate = refs[0][0];
-      }
+    if (!activeDate && refs.length > 0) {
+      activeDate = refs[0][0];
+    }
 
-      if (activeDate && activeDate !== currentStickyDate) {
-        setCurrentStickyDate(activeDate);
-      }
-    };
+    if (activeDate && activeDate !== currentStickyDate) {
+      setCurrentStickyDate(activeDate);
+    }
+  }, [events, currentStickyDate]);
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
+  const throttledHandleScroll = useThrottle(handleScrollInternal, 100);
+
+  useEffect(() => {
+    window.addEventListener("scroll", throttledHandleScroll, { passive: true });
+    throttledHandleScroll();
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", throttledHandleScroll);
     };
-  }, [events, currentStickyDate]);
+  }, [throttledHandleScroll]);
 
   const formatDateDisplay = (dateStr: string): string => {
     if (!dateStr) return "";
@@ -241,13 +223,13 @@ const Events: FC = () => {
       <CityClock city={cityParam} />
 
       <div className="flex-1 flex flex-col">
-        <div className="flex-1 px-4 sm:px-4">
-          {currentStickyDate && events.length > 0 && (
-            <div className="w-full sticky top-[3.5rem] 2xl:top-[3.5rem] z-40 py-1 2xl:py-2 bg-black text-[#fff] font-dela-gothic-one uppercase font-bold text-xl 2xl:text-3xl tracking-wide text-left">
-              {formatDateDisplay(currentStickyDate)}
-            </div>
-          )}
+        {currentStickyDate && events.length > 0 && (
+          <div className="w-full sticky top-[3.625rem] 2xl:top-[4.125rem] z-50 py-1 2xl:py-2 px-4 sm:px-4 bg-black text-[#fff] font-dela-gothic-one uppercase font-bold text-xl 2xl:text-3xl tracking-wide text-left">
+            {formatDateDisplay(currentStickyDate)}
+          </div>
+        )}
 
+        <div className="flex-1 px-4 sm:px-4">
           {isError && (
             <p className="text-red-500 text-center font-montserrat-bolder">
               {error?.message || "An error occurred while fetching events."}
@@ -293,7 +275,7 @@ const Events: FC = () => {
                             }
                           }}
                           data-date={formattedDateTime}
-                          className="w-full z-41 mb-2 border-white font-dela-gothic-one bg-black text-white font-dela-gothic-one uppercase font-bold text-sm 2xl:text-3xl tracking-wide text-left"
+                          className="w-full z-30 mb-2 border-white font-dela-gothic-one bg-black text-white font-dela-gothic-one uppercase font-bold text-sm 2xl:text-3xl tracking-wide text-left"
                         >
                           {formatDateDisplay(formattedDateTime)}
                         </div>
