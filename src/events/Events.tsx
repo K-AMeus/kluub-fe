@@ -160,9 +160,10 @@ const Events: FC = () => {
       <CityClock city={cityParam} />
 
 
+      {/* Sticky Datebar*/}
       <div className="flex-1 flex flex-col">
         {currentStickyDate && events.length > 0 && (
-          <div className="w-full sticky top-[3.55rem] z-50 py-1 px-4 bg-black text-[#fff] font-dela-gothic-one uppercase font-bold text-sm tracking-wide text-left">
+          <div className="w-full sticky top-[3.55rem] z-[60] py-1 px-4 bg-black text-[#fff] font-dela-gothic-one uppercase font-bold text-sm tracking-wide text-left">
             {formatDateDisplay(currentStickyDate)}
           </div>
         )}
@@ -213,7 +214,7 @@ const Events: FC = () => {
                             }
                           }}
                           data-date={formattedDateTime}
-                          className="w-full z-50 mb-2 border-white font-dela-gothic-one bg-black text-white font-dela-gothic-one uppercase font-bold text-sm tracking-wide text-left"
+                          className="z-90 w-full py-1 mb-2 bg-black text-green-700 font-dela-gothic-one uppercase font-bold text-sm tracking-wide text-left"
                         >
                           {formatDateDisplay(formattedDateTime)}
                         </div>
@@ -227,7 +228,7 @@ const Events: FC = () => {
                             }
                           }}
                           data-date={formattedDateTime}
-                          className="absolute -top-full h-0 overflow-hidden z-10"
+                          className="absolute -top-full h-0 overflow-hidden z-40"
                         >
                           {formatDateDisplay(formattedDateTime)}
                         </div>

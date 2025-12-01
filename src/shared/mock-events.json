@@ -54,8 +54,8 @@
     "imageUrl": "samples/ecommerce/shoes",
     "fbLink": "https://facebook.com/events/comedy-night",
     "ticket": 15,
-    "openTime": "2025-11-27T20:00:00Z",
-    "closeTime": "2025-11-27T23:00:00Z",
+    "openTime": "2025-11-26T20:00:00Z",
+    "closeTime": "2025-11-26T23:00:00Z",
     "topPick": false,
     "likedByUser": false
   },
