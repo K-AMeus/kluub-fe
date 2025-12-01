@@ -25,7 +25,7 @@ const EventCard: FC<EventCardProps> = memo(({ event, imageUrl, onClick }) => {
         role="button"
         tabIndex={0}
         aria-label={`View details for ${event.title}`}
-        className="relative z-10 bg-black text-white border border-white/70 p-4 md:p-3 2xl:p-4 font-montserrat-medium flex flex-col sm:flex-row w-full h-[420px] sm:h-[200px] cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#E4DD3B] focus:ring-offset-2 focus:ring-offset-black"
+        className="relative z-10 bg-black text-white border border-white/70 p-4 md:p-3 2xl:p-4 font-montserrat-medium flex flex-col sm:flex-row w-full h-[360px] sm:h-[200px] cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#E4DD3B] focus:ring-offset-2 focus:ring-offset-black"
         onClick={() => onClick(event.id)}
         onKeyPress={handleKeyPress}
       >

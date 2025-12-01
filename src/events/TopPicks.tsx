@@ -60,7 +60,7 @@ export const TopPickEvents: FC = () => {
   return (
     <div className="overflow-hidden">
       <Marquee
-        className="py-3 bg-black border-b-2 border-white/70 text-white mt-2"
+        className="py-3 bg-black border-b-1 border-white/70 text-white mt-2"
         style={{ overflowY: "hidden" }}
         autoFill
         pauseOnHover

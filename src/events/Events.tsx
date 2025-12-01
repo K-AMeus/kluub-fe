@@ -10,84 +10,13 @@ import { fill } from "@cloudinary/url-gen/actions/resize";
 import { Event } from "../shared/reducers/event";
 import mockEventsData from "../shared/mock-events.json";
 import EventCard from "./EventCard.tsx";
-import { useThrottle } from "../shared/hooks/useThrottle";
+import { DateSkeleton, EventSkeleton } from "./EventSkeletons.tsx";
 
 const cld = new Cloudinary({ cloud: { cloudName: "dgptexs0w" } });
 
 const getCloudinaryUrl = (publicId: string, width: number, height: number) => {
   return cld.image(publicId).resize(fill().width(width).height(height)).toURL();
 };
-
-const DateSkeleton = () => (
-  <div className="w-full">
-    <div className="w-full z-30 mb-2 font-dela-gothic-one bg-black">
-      <div className="w-48 h-8 2xl:h-12 bg-white/10 animate-pulse" />
-    </div>
-  </div>
-);
-
-const EventSkeleton = () => (
-  <div className="xs:w-100 md:w-150 lg:w-160 2xl:w-260 mx-auto">
-    <div className="relative group mb-8 w-full">
-      <div className="absolute w-full h-[360px] sm:h-[200px] translate-x-2 translate-y-2 bg-[#E4DD3B] z-0" />
-      <div className="relative z-10 bg-black text-white border border-white/70 p-4 md:p-3 2xl:p-4 font-montserrat-medium flex flex-col sm:flex-row w-full h-[420px] sm:h-[200px]">
-        {/* Image Skeleton */}
-        <div className="relative sm:w-1/4 mb-3 sm:mb-0 sm:-ml-2 sm:-mt-2 h-40 sm:h-full">
-          <div className="w-full h-full bg-white/10 animate-pulse border-2 border-[#E4DD3B]" />
-        </div>
-
-        {/* Main Info Skeleton */}
-        <div className="sm:w-5/12 flex flex-col justify-start pl-0 sm:pl-6 md:pl-4 2xl:pl-8 text-left h-full">
-          {/* Title */}
-          <div className="h-5 2xl:h-6 w-3/4 bg-white/10 animate-pulse" />
-
-          {/* Description */}
-          <div className="mt-2 flex-grow space-y-1.5">
-            <div className="h-2.5 w-full bg-white/10 animate-pulse" />
-            <div className="h-2.5 w-5/6 bg-white/10 animate-pulse" />
-            <div className="h-2.5 w-4/6 bg-white/10 animate-pulse" />
-            <div className="h-2.5 w-full bg-white/10 animate-pulse" />
-          </div>
-
-          {/* Read More */}
-          <div className="h-3 w-20 bg-[#E4DD3B]/20 animate-pulse mt-1.5 hidden sm:block" />
-        </div>
-
-        {/* Side Info Skeleton */}
-        <div className="text-[0.75rem] sm:text-[0.65rem] md:text-[0.65rem] 2xl:text-[0.9rem] sm:w-1/3 flex flex-col items-start pl-0 sm:pl-4 md:pl-3 2xl:pl-6 mt-3 sm:mt-0">
-          <div className="w-full flex flex-col space-y-2">
-            {/* Location */}
-            <div className="flex items-center">
-              <div className="w-4 h-4 rounded-full bg-[#E4DD3B]/20 animate-pulse flex-shrink-0" />
-              <div className="h-4 w-24 bg-white/10 animate-pulse ml-2" />
-            </div>
-
-            {/* Time */}
-            <div className="flex items-center">
-              <div className="w-4 h-4 rounded-full bg-[#E4DD3B]/20 animate-pulse flex-shrink-0" />
-              <div className="h-4 w-32 bg-white/10 animate-pulse ml-2" />
-            </div>
-
-            {/* Price & Facebook */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <div className="w-4 h-4 rounded-full bg-[#E4DD3B]/20 animate-pulse flex-shrink-0" />
-                <div className="h-4 w-16 bg-white/10 animate-pulse ml-2" />
-              </div>
-              <div className="w-4 h-4 rounded-full bg-[#E4DD3B]/20 animate-pulse" />
-            </div>
-          </div>
-        </div>
-
-        {/* Action buttons skeleton */}
-        <div className="absolute top-4 right-3 2xl:top-6 2xl:right-6 z-20 flex flex-col items-center space-y-2">
-          <div className="h-7 w-7 rounded-full bg-white/10 animate-pulse border border-white/40" />
-          <div className="h-7 w-7 rounded-full bg-white/10 animate-pulse border border-white/40" />
-        </div>
-      </div>
-    </div>
-  </div>
-);
 
 const Events: FC = () => {
   const navigate = useNavigate();
@@ -160,6 +89,15 @@ const Events: FC = () => {
   const dateRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const previousDate = useRef<string>("");
 
+  // Set initial sticky date when events load
+  useEffect(() => {
+    if (events.length > 0 && !isLoading) {
+      const firstEventDate = new Date(events[0].openTime);
+      const formattedDateTime = firstEventDate.toISOString().split("T")[0];
+      setCurrentStickyDate(formattedDateTime);
+    }
+  }, [events, isLoading]);
+
   const handleScrollInternal = useCallback(() => {
     // Only process scroll events if we have events to display
     if (events.length === 0) {
@@ -195,16 +133,15 @@ const Events: FC = () => {
     }
   }, [events, currentStickyDate]);
 
-  const throttledHandleScroll = useThrottle(handleScrollInternal, 100);
 
   useEffect(() => {
-    window.addEventListener("scroll", throttledHandleScroll, { passive: true });
-    throttledHandleScroll();
+    window.addEventListener("scroll", handleScrollInternal, { passive: true });
+    handleScrollInternal();
 
     return () => {
-      window.removeEventListener("scroll", throttledHandleScroll);
+      window.removeEventListener("scroll", handleScrollInternal);
     };
-  }, [throttledHandleScroll]);
+  }, [handleScrollInternal]);
 
   const formatDateDisplay = (dateStr: string): string => {
     if (!dateStr) return "";
@@ -222,9 +159,10 @@ const Events: FC = () => {
 
       <CityClock city={cityParam} />
 
+
       <div className="flex-1 flex flex-col">
         {currentStickyDate && events.length > 0 && (
-          <div className="w-full sticky top-[3.625rem] 2xl:top-[4.125rem] z-50 py-1 2xl:py-2 px-4 sm:px-4 bg-black text-[#fff] font-dela-gothic-one uppercase font-bold text-xl 2xl:text-3xl tracking-wide text-left">
+          <div className="w-full sticky top-[3.55rem] z-50 py-1 px-4 bg-black text-[#fff] font-dela-gothic-one uppercase font-bold text-sm tracking-wide text-left">
             {formatDateDisplay(currentStickyDate)}
           </div>
         )}
@@ -275,7 +213,7 @@ const Events: FC = () => {
                             }
                           }}
                           data-date={formattedDateTime}
-                          className="w-full z-30 mb-2 border-white font-dela-gothic-one bg-black text-white font-dela-gothic-one uppercase font-bold text-sm 2xl:text-3xl tracking-wide text-left"
+                          className="w-full z-50 mb-2 border-white font-dela-gothic-one bg-black text-white font-dela-gothic-one uppercase font-bold text-sm tracking-wide text-left"
                         >
                           {formatDateDisplay(formattedDateTime)}
                         </div>
@@ -289,7 +227,7 @@ const Events: FC = () => {
                             }
                           }}
                           data-date={formattedDateTime}
-                          className="absolute -top-full h-0 overflow-hidden"
+                          className="absolute -top-full h-0 overflow-hidden z-10"
                         >
                           {formatDateDisplay(formattedDateTime)}
                         </div>
