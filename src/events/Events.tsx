@@ -86,64 +86,6 @@ const Events: FC = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const [currentStickyDate, setCurrentStickyDate] = useState<string>("");
-  const dateRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
-  const previousDate = useRef<string>("");
-
-  // Set initial sticky date when events load
-  useEffect(() => {
-    if (events.length > 0 && !isLoading) {
-      const firstEventDate = new Date(events[0].openTime);
-      const formattedDateTime = firstEventDate.toISOString().split("T")[0];
-      setCurrentStickyDate(formattedDateTime);
-    }
-  }, [events, isLoading]);
-
-  const handleScrollInternal = useCallback(() => {
-    // Only process scroll events if we have events to display
-    if (events.length === 0) {
-      setCurrentStickyDate("");
-      return;
-    }
-
-    const refs = Object.entries(dateRefs.current)
-      .filter(([, el]) => el !== null)
-      .sort(
-        ([, aEl], [, bEl]) =>
-          aEl!.getBoundingClientRect().top - bEl!.getBoundingClientRect().top
-      );
-
-    let activeDate: string | null = null;
-
-    // Simplified logic - just find the topmost visible date
-    for (const [date, el] of refs) {
-      const top = el!.getBoundingClientRect().top;
-      if (top <= 76) {
-        activeDate = date;
-      } else {
-        break;
-      }
-    }
-
-    if (!activeDate && refs.length > 0) {
-      activeDate = refs[0][0];
-    }
-
-    if (activeDate && activeDate !== currentStickyDate) {
-      setCurrentStickyDate(activeDate);
-    }
-  }, [events, currentStickyDate]);
-
-
-  useEffect(() => {
-    window.addEventListener("scroll", handleScrollInternal, { passive: true });
-    handleScrollInternal();
-
-    return () => {
-      window.removeEventListener("scroll", handleScrollInternal);
-    };
-  }, [handleScrollInternal]);
-
   const formatDateDisplay = (dateStr: string): string => {
     if (!dateStr) return "";
     const date = new Date(dateStr);
@@ -154,21 +96,27 @@ const Events: FC = () => {
     });
   };
 
+  // Group events by date
+  const eventsByDate = useMemo(() => {
+    const grouped: { [key: string]: Event[] } = {};
+    events.forEach((event) => {
+      const eventDate = new Date(event.openTime);
+      const dateKey = eventDate.toISOString().split("T")[0];
+      if (!grouped[dateKey]) {
+        grouped[dateKey] = [];
+      }
+      grouped[dateKey].push(event);
+    });
+    return grouped;
+  }, [events]);
+
   return (
     <div className="flex flex-col min-h-screen">
       <TopPickEvents />
 
       <CityClock city={cityParam} />
 
-
-      {/* Sticky Datebar*/}
       <div className="flex-1 flex flex-col">
-        {currentStickyDate && events.length > 0 && (
-          <div className="w-full sticky top-[3.55rem] z-[60] py-1 px-4 bg-black text-[#fff] font-dela-gothic-one uppercase font-bold text-sm tracking-wide text-left">
-            {formatDateDisplay(currentStickyDate)}
-          </div>
-        )}
-
         <div className="flex-1 px-4 sm:px-4">
           {isError && (
             <p className="text-red-500 text-center font-montserrat-bolder">
@@ -187,62 +135,30 @@ const Events: FC = () => {
                   </div>
                 </div>
               ) : (
-                events.map((event, index) => {
-                  const transformedUrl = getCloudinaryUrl(
-                    event.imageUrl,
-                    320,
-                    260
-                  );
-                  const notFirst = index !== 0;
-                  const eventDate = new Date(event.openTime);
-                  const eventDateStr = eventDate.toDateString();
-                  const showDateMarquee = eventDateStr !== previousDate.current;
-
-                  if (showDateMarquee) {
-                    previousDate.current = eventDateStr;
-                  }
-                  const formattedDateTime = eventDate
-                    .toISOString()
-                    .split("T")[0];
-
-                  return (
-                    <div className="w-full" key={event.id}>
-                      {showDateMarquee && notFirst && events.length > 0 && (
-                        <div
-                          ref={(el: HTMLDivElement | null) => {
-                            if (el) {
-                              dateRefs.current[formattedDateTime] = el;
-                            }
-                          }}
-                          data-date={formattedDateTime}
-                          className="z-90 w-full py-1 mb-2 bg-black text-green-700 font-dela-gothic-one uppercase font-bold text-sm tracking-wide text-left"
-                        >
-                          {formatDateDisplay(formattedDateTime)}
-                        </div>
-                      )}
-
-                      {showDateMarquee && !notFirst && events.length > 0 && (
-                        <div
-                          ref={(el: HTMLDivElement | null) => {
-                            if (el) {
-                              dateRefs.current[formattedDateTime] = el;
-                            }
-                          }}
-                          data-date={formattedDateTime}
-                          className="absolute -top-full h-0 overflow-hidden z-40"
-                        >
-                          {formatDateDisplay(formattedDateTime)}
-                        </div>
-                      )}
-
-                      <EventCard
-                        event={event}
-                        imageUrl={transformedUrl}
-                        onClick={handleEventClick}
-                      />
+                Object.entries(eventsByDate).map(([dateKey, dateEvents]) => (
+                  <div key={dateKey} className="w-full">
+                    <div className="sticky top-[3.55rem] z-50 w-[100%] py-1 mb-2 bg-black text-[#FFF] font-dela-gothic-one uppercase font-bold text-sm tracking-wide text-left">
+                      {formatDateDisplay(dateKey)}
                     </div>
-                  );
-                })
+                    <div className="space-y-8">
+                      {dateEvents.map((event) => {
+                        const transformedUrl = getCloudinaryUrl(
+                          event.imageUrl,
+                          320,
+                          260
+                        );
+                        return (
+                          <EventCard
+                            key={event.id}
+                            event={event}
+                            imageUrl={transformedUrl}
+                            onClick={handleEventClick}
+                          />
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))
               )}
             </div>
 
