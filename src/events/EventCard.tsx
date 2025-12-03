@@ -20,7 +20,6 @@ const EventCard: FC<EventCardProps> = memo(({ event, imageUrl, onClick }) => {
 
   return (
     <div className="xs:w-100 md:w-150 lg:w-160 2xl:w-260 mx-auto relative group mb-8 z-30">
-      <div className="absolute w-full h-[360px] sm:h-[200px] translate-x-2 translate-y-2 bg-[#E4DD3B] z-0 transition-transform duration-200 group-hover:-translate-x-0 group-hover:-translate-y-0" />
       <div
         role="button"
         tabIndex={0}
@@ -36,7 +35,7 @@ const EventCard: FC<EventCardProps> = memo(({ event, imageUrl, onClick }) => {
               src={imageUrl}
               alt={event.title}
               effect="blur"
-              className="absolute inset-0 w-full h-full object-cover border-2 border-[#E4DD3B]"
+              className="absolute inset-0 w-full h-full object-cover border border-[#fff] rounded-xl"
               wrapperClassName="!absolute inset-0 w-full h-full"
             />
           </div>
