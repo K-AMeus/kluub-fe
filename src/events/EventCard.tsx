@@ -19,23 +19,23 @@ const EventCard: FC<EventCardProps> = memo(({ event, imageUrl, onClick }) => {
   };
 
   return (
-    <div className="xs:w-100 md:w-150 lg:w-160 2xl:w-260 mx-auto relative group mb-8 z-30">
+    <div className="xs:w-100 md:w-150 lg:w-160 2xl:w-260 mx-auto relative group mb-0 z-30">
       <div
         role="button"
         tabIndex={0}
         aria-label={`View details for ${event.title}`}
-        className="relative z-10 bg-black text-white border border-white/70 p-4 md:p-3 2xl:p-4 font-montserrat-medium flex flex-col sm:flex-row w-full h-[360px] sm:h-[200px] cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#E4DD3B] focus:ring-offset-2 focus:ring-offset-black"
+        className="relative z-10 bg-black text-white font-montserrat-medium flex flex-col sm:flex-row w-full h-[320px] sm:h-[200px] cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#E4DD3B] focus:ring-offset-2 focus:ring-offset-black"
         onClick={() => onClick(event.id)}
         onKeyPress={handleKeyPress}
       >
         {/* Image Container */}
-        <div className="relative w-full sm:w-1/4 h-40 sm:h-full mb-3 sm:mb-0 sm:-ml-2 sm:-mt-2">
+        <div className="relative w-full sm:w-1/4 h-100 sm:h-full mb-3 sm:mb-0 sm:-ml-2 sm:-mt-2">
           <div className="w-full h-full bg-white/10 relative">
             <LazyLoadImage
               src={imageUrl}
               alt={event.title}
               effect="blur"
-              className="absolute inset-0 w-full h-full object-cover border border-[#fff] rounded-xl"
+              className="absolute inset-0 w-full h-full object-cover borde r border-[#fff] rounded-xl"
               wrapperClassName="!absolute inset-0 w-full h-full"
             />
           </div>
@@ -47,12 +47,7 @@ const EventCard: FC<EventCardProps> = memo(({ event, imageUrl, onClick }) => {
             {event.title}
           </h2>
           <div className="flex-grow overflow-hidden">
-            <p
-              className="leading-[1.2] text-[0.65rem] sm:text-[0.6rem] 2xl:text-[0.8rem] text-balance text-white font-montserrat mt-2 line-clamp-3 sm:line-clamp-4"
-              style={{ wordSpacing: "0.03em" }}
-            >
-              {event.description}
-            </p>
+
           </div>
           <p className="text-xs hidden sm:block sm:text-[0.6rem] 2xl:text-xs text-[#E4DD3B] font-montserrat-medium mt-1.5 transition-colors">
             Read More →
@@ -113,6 +108,9 @@ const EventCard: FC<EventCardProps> = memo(({ event, imageUrl, onClick }) => {
               </div>
             </div>
         </div>
+
+        <hr className="my-5"/>
+
       </div>
     </div>
   );

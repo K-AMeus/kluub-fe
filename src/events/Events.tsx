@@ -137,10 +137,10 @@ const Events: FC = () => {
               ) : (
                 Object.entries(eventsByDate).map(([dateKey, dateEvents]) => (
                   <div key={dateKey} className="w-full">
-                    <div className="sticky top-[3.55rem] z-50 w-[100%] py-1 mb-2 bg-black text-[#FFF] font-dela-gothic-one uppercase font-bold text-sm tracking-wide text-left">
+                    <div className="sticky top-[3.55rem] z-50 w-[100%] py-1 mb-2 bg-black text-[#FFF] font-dela-gothic-one uppercase font-bold text-md tracking-wide text-left">
                       {formatDateDisplay(dateKey)}
                     </div>
-                    <div className="space-y-8">
+                    <div className="space-y-0">
                       {dateEvents.map((event) => {
                         const transformedUrl = getCloudinaryUrl(
                           event.imageUrl,
