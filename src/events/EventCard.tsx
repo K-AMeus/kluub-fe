@@ -108,9 +108,6 @@ const EventCard: FC<EventCardProps> = memo(({ event, imageUrl, onClick }) => {
               </div>
             </div>
         </div>
-
-        <hr className="my-5"/>
-
       </div>
     </div>
   );

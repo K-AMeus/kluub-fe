@@ -124,7 +124,7 @@ const Events: FC = () => {
             </p>
           )}
 
-          <div className="space-y-8 w-full justify-items-center">
+          <div className="space-y-12 w-full justify-items-center">
             {isLoading || (events.length === 0 && !isError) ? (
                 <div className="mt-8 w-full">
                   <DateSkeleton />
@@ -137,23 +137,26 @@ const Events: FC = () => {
               ) : (
                 Object.entries(eventsByDate).map(([dateKey, dateEvents]) => (
                   <div key={dateKey} className="w-full">
-                    <div className="sticky top-[3.55rem] z-50 w-[100%] py-1 mb-2 bg-black text-[#FFF] font-dela-gothic-one uppercase font-bold text-md tracking-wide text-left">
+                    <div className="sticky top-[3.55rem] z-50 w-[100%] py-1 mb-0 bg-black text-[#FFF] font-dela-gothic-one  uppercase font-bold text-lg tracking-wide text-left">
                       {formatDateDisplay(dateKey)}
                     </div>
                     <div className="space-y-0">
-                      {dateEvents.map((event) => {
+                      {dateEvents.map((event, index) => {
                         const transformedUrl = getCloudinaryUrl(
                           event.imageUrl,
                           320,
                           260
                         );
                         return (
-                          <EventCard
-                            key={event.id}
-                            event={event}
-                            imageUrl={transformedUrl}
-                            onClick={handleEventClick}
-                          />
+                          <div key={event.id}>
+                            <hr className={index === 0 ? "mt-0 mb-3" : "my-3"}/>
+                            <EventCard
+                              event={event}
+                              imageUrl={transformedUrl}
+                              onClick={handleEventClick}
+                            />
+                            {index === dateEvents.length - 1 && <hr className="my-3"/>}
+                          </div>
                         );
                       })}
                     </div>
