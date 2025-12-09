@@ -137,7 +137,7 @@ const Events: FC = () => {
               ) : (
                 Object.entries(eventsByDate).map(([dateKey, dateEvents]) => (
                   <div key={dateKey} className="w-full">
-                    <div className="sticky top-[3.55rem] z-50 w-[100%] py-1 mb-0 bg-black text-[#FFF] font-dela-gothic-one  uppercase font-bold text-lg tracking-wide text-left">
+                    <div className="sticky top-[3.55rem] pl-2 z-50 w-[100%] py-1 mb-0 bg-black text-[#FFF] font-tt-travels uppercase font-bold text-xl tracking-wide text-left flex items-center gap-2">
                       {formatDateDisplay(dateKey)}
                     </div>
                     <div className="space-y-0">
